@@ -1,0 +1,2 @@
+set MyServiceConfiguration__Url=
+set DOCKER_IMAGE=
