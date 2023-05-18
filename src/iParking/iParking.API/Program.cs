@@ -1,7 +1,12 @@
+using iParking.Application;
+using iParking.Infrastructure.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IIntegrationServiceClient, IntegrationServiceClient>();
+builder.Services.AddScoped<IPayExtenalService, PayExtenalService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

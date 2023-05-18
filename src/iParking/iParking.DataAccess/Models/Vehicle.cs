@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Domain.Entities;
+namespace iParking.DataAccess.Models;
 
 public partial class Vehicle
 {

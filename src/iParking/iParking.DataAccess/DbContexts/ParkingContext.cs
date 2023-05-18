@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using iParking.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace iParking.DataAccess.DbContexts;
