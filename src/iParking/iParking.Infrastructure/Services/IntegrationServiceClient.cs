@@ -6,7 +6,7 @@
 
         public IntegrationServiceClient(IHttpClientFactory httpClientFactory)
         {
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory)); ;           
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));        
         }
 
         public async Task<HttpResponseMessage> SendRequestAsync(string requestUrl, HttpMethod httpMethod, Dictionary<string, string> requestData)
@@ -17,6 +17,7 @@
             // Agregar datos de la solicitud
             request.Content = new FormUrlEncodedContent(requestData);
             var httpClient = _httpClientFactory.CreateClient();
+           // var httpClient = new HttpClient();
 
             return await httpClient.SendAsync(request);
         }

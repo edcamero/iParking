@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\iParking.DataAccess\iParking.DataAccess.csproj" />
     <ProjectReference Include="..\iParking.Domain\iParking.Domain.csproj" />
     <ProjectReference Include="..\iParking.Infrastructure\iParking.Infrastructure.csproj" />
   </ItemGroup>

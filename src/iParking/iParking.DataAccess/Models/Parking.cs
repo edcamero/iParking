@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace iParking.DataAccess.Models;
+﻿namespace iParking.DataAccess.Models;
 
 public partial class Parking
 {

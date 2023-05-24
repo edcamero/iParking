@@ -1,6 +1,8 @@
 ﻿using iParking.Application;
 using iParking.Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.WebRequestMethods;
 
 namespace iParking.API.Controllers
 {
@@ -17,9 +19,22 @@ namespace iParking.API.Controllers
         [Route("api/v1/payment")]
         public async Task<IActionResult> MakePayment([FromForm] RequestPayExternal paymentData)
         {
-            var reponsePay = await _payExtenalService.MakePaymentPost(paymentData);
+            try
+            {
+                var reponsePay = await _payExtenalService.MakePaymentPost(paymentData);
 
-            return Ok(reponsePay);
+                if (reponsePay.Status)
+                {
+                    return Ok(reponsePay);
+                }
+
+                return BadRequest(reponsePay);
+            }
+            catch
+            {
+                return StatusCode(500, "Error de servidor");
+            }
+         
         }
     }
 }

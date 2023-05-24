@@ -12,6 +12,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iParking.API", "iParking.API\iParking.API.csproj", "{8500ABBD-F7A7-4101-A796-92FD521867EA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B9C669-7196-4497-A2AC-6B8F690E6D82} = {92B9C669-7196-4497-A2AC-6B8F690E6D82}
+		{A6611AD0-F1A4-4663-90AE-ABEAE6B16C87} = {A6611AD0-F1A4-4663-90AE-ABEAE6B16C87}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iParking.Infrastructure", "iParking.Infrastructure\iParking.Infrastructure.csproj", "{C3A8D6DC-947F-4500-B326-CB491F73D26F}"
