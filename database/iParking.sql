@@ -13,7 +13,7 @@ CREATE TABLE Vehicle (
   parking VARCHAR(255) NOT NULL,
   createdAt DATETIME NOT NULL DEFAULT GETDATE(),
   updatedAt DATETIME NULL,
-  TINYINT NOT NULL  DEFAULT(0) (CHECK (state IN (0,1))
+  state TINYINT NOT NULL  DEFAULT(0) CHECK (state IN (0,1)),
   parking_id INT NOT NULL,
   CONSTRAINT FK_CarParking_Parking FOREIGN KEY (parking_id) REFERENCES Parking(id)
 );
