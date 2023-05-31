@@ -12,16 +12,28 @@ namespace iParking.API.Controllers
     public class ParkingController : ControllerBase
     {
         private readonly IParkingServices _parkingServices;
-        public ParkingController(IParkingServices parkingServices)
+        private readonly ILogger<ParkingController> _logger;
+        public ParkingController(IParkingServices parkingServices, ILogger<ParkingController> logger)
         {
             _parkingServices = parkingServices ?? throw new ArgumentNullException(nameof(parkingServices));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         // GET: api/<ParkingController>
         [HttpGet]
-        public async Task<IEnumerable<Parking>> GetAsync()
+        public async Task<IActionResult> GetAsync()
         {
-            return await _parkingServices.GetParkings();
+            try
+            {
+                var result =  await _parkingServices.GetParkings();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error al consultar los parquederos");
+                return StatusCode(500, "Error de servidor");
+            }
+           
         }
 
         // GET api/<ParkingController>/5
