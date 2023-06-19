@@ -1,7 +1,9 @@
 using iParking.Application;
 using iParking.Application.Services.Parking;
 using iParking.DataAccess;
+using iParking.DataAccess.DataServices;
 using iParking.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 const string IParkingConnection = "iParkingConnection";
@@ -16,7 +18,8 @@ Log.Logger = new LoggerConfiguration()
 // Add services to the container.
 builder.Services.AddHttpClient();
 
-builder.Services.AddiParkingDbContexts(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection)));
+//builder.Services.AddiParkingDbContexts(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection)));
+builder.Services.AddScoped<IParkingDataServices>(provider => new ParkingDataServicesCommand(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection))));
 
 builder.Services.AddScoped<IIntegrationServiceClient, IntegrationServiceClient>();
 builder.Services.AddScoped<IPayExtenalService, PayExtenalService>();
