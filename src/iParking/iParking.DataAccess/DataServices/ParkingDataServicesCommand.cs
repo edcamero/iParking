@@ -22,8 +22,8 @@ namespace iParking.DataAccess.DataServices
             command.Parameters.AddWithValue("@location", newParking.Location);
             command.Parameters.AddWithValue("@createdAt", newParking.CreatedAt);
 
-            newParking.Id = (int) command.ExecuteScalar();
-
+            newParking.Id = Convert.ToInt32(command.ExecuteScalar());
+            
             return newParking;
         }
 
