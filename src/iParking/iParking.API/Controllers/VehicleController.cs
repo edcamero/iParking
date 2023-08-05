@@ -101,7 +101,7 @@ namespace iParking.API.Controllers
         }
 
         [Route("api/v1/user/{userId}/vehicles/{vehicleId}/default")]
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> UpdatedUserVehicleDefault(int userId, int vehicleId)
         {
             try
@@ -138,6 +138,49 @@ namespace iParking.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "error al actualizar el vehiculo");
+
+                return StatusCode(500, "Error de servidor");
+            }
+        }
+
+        [Route("api/v1/user/{userId}/vehicles/{vehicleId}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUserVehicle(int userId, int vehicleId)
+        {
+            try
+            {
+                var vehicleResponse = await _vehicleServices.DeletedUserVehicle(userId, vehicleId);
+
+                if (vehicleResponse.Status)
+                {
+                    var response = new
+                    {
+                        estatus = true,
+                        datos = new
+                        {
+                            keysession = vehicleResponse.KeySession,
+                            id = vehicleResponse.Id
+                        }
+                    };
+
+                    return Ok(response);
+                }
+
+                var responseHttp = new
+                {
+                    status = false,
+                    data = new
+                    {
+                        keySession = "0",
+                        message = vehicleResponse.Message
+                    }
+                };
+
+                return BadRequest(vehicleResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error al eliminar el vehiculo");
 
                 return StatusCode(500, "Error de servidor");
             }

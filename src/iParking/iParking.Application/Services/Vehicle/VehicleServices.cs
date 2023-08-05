@@ -1,4 +1,4 @@
-﻿using iParking.DataAccess.DataServices.VehicleServices;
+﻿using iParking.DataAccess.DataServices.VehicleDataServices;
 using iParking.Domain.Entities;
 using iParking.Domain.Entities.Vehicle;
 
@@ -109,6 +109,51 @@ namespace iParking.Application.Services.Vehicle
             else
             {
                 response.Message = "Error tratando de registrar el vehiculo";
+            }
+
+            return response;
+        }
+
+        public async Task<ActionResponseSession> DeletedUserVehicle(int userId, int vehicleId)
+        {
+            var vehiclesUser = await _vehicleDataServices.GetUserVehicles(userId);
+
+            var vehicleUser = vehiclesUser.Count != 0 ? vehiclesUser.First(x => x.IdPlaca == vehicleId) : null;
+
+            var response = new ActionResponseSession();
+
+            if (vehicleUser == null)
+            {
+                response.Message = "El vehiculo no se encuentra registrado";
+                response.Code = 409;
+
+                return response;
+            }
+
+
+            if (vehicleUser.Estado == 0)
+            {
+                if (vehicleUser != null)
+                {
+                    response.Message = "El usuario tiene vehiculo registrado pero esta deshabilitado";
+                    response.Code = 409;
+
+                    return response;
+                }
+            }
+
+            var isVehicleUpdated = await _vehicleDataServices.DeleteUserVehicle(userId, vehicleId);
+
+            if (isVehicleUpdated)
+            {
+                response.Status = true;
+                response.Code = 201;
+                response.KeySession = userId;
+                response.Id = vehicleId;
+            }
+            else
+            {
+                response.Message = "Error tratando de eliminar el vehiculo";
             }
 
             return response;

@@ -1,6 +1,6 @@
 ﻿using iParking.DataAccess.DataServices;
 using iParking.DataAccess.DataServices.CardServices;
-using iParking.DataAccess.DataServices.VehicleServices;
+using iParking.DataAccess.DataServices.VehicleDataServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace iParking.DataAccess
@@ -13,7 +13,7 @@ namespace iParking.DataAccess
             services.AddScoped<IParkingDataServices, ParkingDataServicesCommand>();
             services.AddScoped<IUserDataServices, UserDataServices>();
             services.AddScoped<ICardDataServices, CardDataServices>();
-            services.AddScoped<IVehicleDataServices, VehicleDataServices>();
+            services.AddScoped<IVehicleDataServices, VehicleData>();
         }
     }
 }

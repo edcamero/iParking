@@ -1,14 +1,13 @@
-﻿using iParking.Domain.Entities.Usuario;
-using iParking.Domain.Entities.Vehicle;
+﻿using iParking.Domain.Entities.Vehicle;
 using Microsoft.Data.SqlClient;
 
-namespace iParking.DataAccess.DataServices.VehicleServices
+namespace iParking.DataAccess.DataServices.VehicleDataServices
 {
-    public class VehicleDataServices : IVehicleDataServices
+    public class VehicleData : IVehicleDataServices
     {
         private readonly ISqlConnectionFactory _connectionFactory;
 
-        public VehicleDataServices(ISqlConnectionFactory connectionFactory)
+        public VehicleData(ISqlConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -72,8 +71,20 @@ namespace iParking.DataAccess.DataServices.VehicleServices
 
             var result = await command.ExecuteNonQueryAsync();
 
-            return  Convert.ToInt32(result) > 0;
-           
+            return  Convert.ToInt32(result) > 0;           
+        }
+
+        public async Task<bool> DeleteUserVehicle(int userId, int vehicleId)
+        {
+            using var connection = await _connectionFactory.GetConnectionAsync();
+
+            using var command = new SqlCommand("UPDATE TBL_PLACA SET ESTADO = 0 WHERE id_usuario = @userId and WHERE id_placa = @vehicleId", connection);
+            command.Parameters.AddWithValue("@userId", userId);
+            command.Parameters.AddWithValue("@vehicleId", vehicleId);
+
+            var result = await command.ExecuteNonQueryAsync();
+
+            return Convert.ToInt32(result) > 0;
         }
     }
 }
