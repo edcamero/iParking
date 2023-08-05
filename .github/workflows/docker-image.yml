@@ -15,4 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build  --tag iparking:prod ./src/iParking 
+      run: docker build  --tag iparking:prod ./src/iParking
+
+    - uses: actions/checkout@v3
+    - name: Publish Docker image
+      run: docker build  --tag iparking:prod ./src/iParking
+      
