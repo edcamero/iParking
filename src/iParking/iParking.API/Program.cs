@@ -1,9 +1,7 @@
+using iParking.API.Extensions;
 using iParking.Application;
-using iParking.Application.Services.Parking;
 using iParking.DataAccess;
-using iParking.DataAccess.DataServices;
 using iParking.Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
 using Serilog;
 
 const string IParkingConnection = "iParkingConnection";
@@ -18,26 +16,29 @@ Log.Logger = new LoggerConfiguration()
 // Add services to the container.
 builder.Services.AddHttpClient();
 
-//builder.Services.AddiParkingDbContexts(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection)));
-builder.Services.AddScoped<IParkingDataServices>(provider => new ParkingDataServicesCommand(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection))));
+builder.Services.AddiParkingDataServices(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection)));
 
 builder.Services.AddScoped<IIntegrationServiceClient, IntegrationServiceClient>();
-builder.Services.AddScoped<IPayExtenalService, PayExtenalService>();
-builder.Services.AddScoped<IParkingServices, ParkingServices>();
+
+builder.Services.AddiParkingAplicationServices();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//builder.Services.AddControllers().AddJsonOptions(options =>
+//{
+//    options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+//});
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

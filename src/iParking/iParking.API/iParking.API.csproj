@@ -19,4 +19,8 @@
     <ProjectReference Include="..\iParking.Application\iParking.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="logs\" />
+  </ItemGroup>
+
 </Project>
