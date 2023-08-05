@@ -21,6 +21,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: actions/checkout@v3
       - name: Publish Docker image
-        run: docker build  --tag iparking:prod ./src/iParking
+        run: docker build  --tag ${{ secrets.DOCKERHUB_USERNAME }}/iparking:prod ./src/iParking
       - name: Push
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/iparking:latest
