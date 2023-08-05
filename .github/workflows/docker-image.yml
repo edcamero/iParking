@@ -20,11 +20,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build the Docker image
     - uses: actions/checkout@v3
-      run: |
-            docker build  --tag ${{ secrets.DOCKER_USER }}/iparking:${{ github.sha }} ./src/iParking
-            docker build  --tag ${{ secrets.DOCKER_USER }}/iparking:prod ./src/iParking
+      run: docker build  --tag ${{ secrets.DOCKER_USER }}/iparking:prod ./src/iParking
     - name: Push
     - uses: actions/checkout@v3
-      run: |
-            docker push ${{ secrets.DOCKER_USER }}/iparking:${{ github.sha }}
-            docker push ${{ secrets.DOCKER_USER }}/iparking:latest
+      run: docker push ${{ secrets.DOCKER_USER }}/iparking:latest
