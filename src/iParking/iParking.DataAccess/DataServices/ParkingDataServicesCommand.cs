@@ -5,17 +5,16 @@ namespace iParking.DataAccess.DataServices
 {
     public class ParkingDataServicesCommand : IParkingDataServices
     {
-        private readonly string _connectionString;
+        private readonly ISqlConnectionFactory _connectionFactory;
 
-        public ParkingDataServicesCommand(string connectionString)
+        public ParkingDataServicesCommand(ISqlConnectionFactory connectionFactory)
         {
-            _connectionString = connectionString;
+            _connectionFactory = connectionFactory;
         }
 
         public async Task<Parking> CreateParking(Parking newParking)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection = await _connectionFactory.GetConnectionAsync();
 
             using var command = new SqlCommand("INSERT INTO Parking (name, location, createdAt) VALUES (@name, @location, @createdAt); SELECT SCOPE_IDENTITY();", connection);
             command.Parameters.AddWithValue("@name", newParking.Name);
@@ -29,7 +28,7 @@ namespace iParking.DataAccess.DataServices
 
         public async Task<Parking?> GetParking(int id)
         {
-            using var connection = new SqlConnection(_connectionString);
+            using var connection = await _connectionFactory.GetConnectionAsync();
             await connection.OpenAsync();
 
             using var command = new SqlCommand("SELECT * FROM Parking WHERE id = @id;", connection);
@@ -55,8 +54,7 @@ namespace iParking.DataAccess.DataServices
 
         public async Task<List<Parking>> GetParkings()
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection = await _connectionFactory.GetConnectionAsync();
 
             using var command = new SqlCommand("SELECT * FROM Parking;", connection);
 
@@ -81,8 +79,7 @@ namespace iParking.DataAccess.DataServices
 
         public async Task<Parking?> UpdateParking(Parking updateParking)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection = await _connectionFactory.GetConnectionAsync();
 
             using var command = new SqlCommand("UPDATE Parking SET name = @name, location = @location, updatedAt = @updatedAt WHERE id = @id;", connection);
             command.Parameters.AddWithValue("@name", updateParking.Name);
@@ -101,8 +98,7 @@ namespace iParking.DataAccess.DataServices
 
         public async Task<Parking?> DeleteParking(int id)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection = await _connectionFactory.GetConnectionAsync();
 
             using var command = new SqlCommand("DELETE FROM Parking WHERE id = @id;", connection);
             command.Parameters.AddWithValue("@id", id);

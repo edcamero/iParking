@@ -1,5 +1,6 @@
 ﻿
 using iParking.Domain.Entities;
+using iParking.Domain.Entities.Payment;
 using iParking.Infrastructure.Identity;
 using iParking.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
@@ -58,8 +59,17 @@ namespace iParking.Application
             }
 
             return new ResponsePayDTO(false, "Algo salio mal, por favor intente contactarse con su proveedor");
-
         }
 
+        public async Task<List<FormaPago>> GetPaymentMethods()
+        {
+            var formasDePago = new List<FormaPago>();
+
+            formasDePago.Add(new FormaPago(1, "1234", true, "VISA"));
+            formasDePago.Add(new FormaPago(2, "4557", false, "MASTER"));
+            formasDePago.Add(new FormaPago(3, "2345", true, "DINNER"));
+
+            return await Task.FromResult(formasDePago);
+        }
     }
 }

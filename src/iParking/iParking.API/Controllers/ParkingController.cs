@@ -1,5 +1,4 @@
 ﻿using iParking.Application.Services.Parking;
-using iParking.DataAccess.Models;
 using iParking.Domain.Parking;
 using Microsoft.AspNetCore.Mvc;
 
