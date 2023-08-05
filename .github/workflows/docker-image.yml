@@ -13,14 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Login to Docker Hub
-    - uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Build the Docker image
-    - uses: actions/checkout@v3
-      run: docker build  --tag ${{ secrets.DOCKER_USER }}/iparking:prod ./src/iParking
-    - name: Push
-    - uses: actions/checkout@v3
-      run: docker push ${{ secrets.DOCKER_USER }}/iparking:latest
+      - name: Login to Docker Hub
+      - uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the Docker image
+      - uses: actions/checkout@v3
+        run: docker build  --tag ${{ secrets.DOCKER_USER }}/iparking:prod ./src/iParking
+      - name: Push
+      - uses: actions/checkout@v3
+        run: docker push ${{ secrets.DOCKER_USER }}/iparking:latest
