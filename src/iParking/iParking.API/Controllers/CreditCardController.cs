@@ -57,11 +57,12 @@ namespace iParking.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteCreditCard(CreditCardInput creditCard)
+        [Route("{userId}/delete/{cardId}")]
+        public async Task<IActionResult> DeleteCreditCard(int userId, int creditCardId)
         {
             try
             {
-                var response = await _creditCardServices.DeleteCreditCard(creditCard);
+                var response = await _creditCardServices.DeleteCreditCard(userId, creditCardId);
 
                 if (response.Status)
                 {
@@ -89,6 +90,49 @@ namespace iParking.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "error al eliminar tarjeta");
+
+                return StatusCode(500, "Error de servidor");
+            }
+        }
+
+        [Route("{userId}/default/{cardId}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdatedUserVehicleDefault(int userId, int cardId)
+        {
+            try
+            {
+                var vehicleResponse = await _creditCardServices.UpdatedCreditCardDefault(userId, cardId);
+
+                if (vehicleResponse.Status)
+                {
+                    var response = new
+                    {
+                        estatus = true,
+                        datos = new
+                        {
+                            keysession = vehicleResponse.KeySession,
+                            id = vehicleResponse.Id
+                        }
+                    };
+
+                    return Ok(response);
+                }
+
+                var responseHttp = new
+                {
+                    status = false,
+                    data = new
+                    {
+                        keySession = "0",
+                        message = vehicleResponse.Message
+                    }
+                };
+
+                return BadRequest(vehicleResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error al actualizar la tarjeta");
 
                 return StatusCode(500, "Error de servidor");
             }

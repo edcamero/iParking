@@ -7,7 +7,7 @@ namespace iParking.Application.Services.Vehicle
     {
         Task<(List<EVehicle>, ActionResponse)> GetUserVehicles(int userId);
         Task<ActionResponseSession> CreatedUserVehicle(VehicleUserInput vehicleInput);
-
         Task<ActionResponseSession> UpdatedUserVehicleDefault(int userId, int vehicleId);
+        Task<ActionResponseSession> DeletedUserVehicle(int userId, int vehicleId);
     }
 }
