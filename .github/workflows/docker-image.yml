@@ -23,4 +23,4 @@ jobs:
       - name: Publish Docker image
         run: docker build  --tag iparking:prod ./src/iParking
       - name: Push
-        run: docker push ${{ secrets.DOCKER_USER }}/iparking:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/iparking:latest
