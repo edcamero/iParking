@@ -22,4 +22,5 @@ jobs:
       - uses: actions/checkout@v3
       - name: Publish Docker image
         run: docker build  --tag iparking:prod ./src/iParking
-      
+      - name: Push
+        run: docker push ${{ secrets.DOCKER_USER }}/iparking:latest
