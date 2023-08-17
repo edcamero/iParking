@@ -1,5 +1,7 @@
 ﻿using iParking.DataAccess.Models;
+using iParking.Domain.ParkingModels;
 using Microsoft.Data.SqlClient;
+using System;
 
 namespace iParking.DataAccess.DataServices
 {
@@ -35,6 +37,7 @@ namespace iParking.DataAccess.DataServices
             command.Parameters.AddWithValue("@id", id);
 
             using var reader = await command.ExecuteReaderAsync();
+
             if (await reader.ReadAsync())
             {
                 var parking = new Parking
@@ -69,6 +72,34 @@ namespace iParking.DataAccess.DataServices
                     Location = reader.IsDBNull(reader.GetOrdinal("location")) ? null : reader.GetString(reader.GetOrdinal("location")),
                     CreatedAt = reader.GetDateTime(reader.GetOrdinal("createdAt")),
                     UpdatedAt = reader.IsDBNull(reader.GetOrdinal("updatedAt")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("updatedAt"))
+                };
+
+                parkings.Add(parking);
+            }
+
+            return parkings;
+        }
+        
+        public async Task<List<NearbyParkingLot>> GetNearbyParkings()
+        {
+            using var connection = await _connectionFactory.GetConnectionAsync();
+
+            using var command = new SqlCommand("SELECT * FROM TBL_LUGARES WHERE ESTADO = 1 ", connection);
+
+            var parkings = new List<NearbyParkingLot>();
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var parking = new NearbyParkingLot
+                {
+                    Id=Convert.ToInt32(reader["ID_LUGAR"]),
+                    Name = reader.GetString(reader.GetOrdinal("NOMBRE")),
+                    Latitude = reader.GetDouble(reader.GetOrdinal("LATITUD")),
+                    Longitude = reader.GetDouble(reader.GetOrdinal("LONGITUD")),
+                    Tariff = reader.GetString(reader.GetOrdinal("TARIFA")),
+                    Schedule = reader.GetString(reader.GetOrdinal("HORARIO")),
+                    AvailablePlaces = reader.GetByte(reader.GetOrdinal("LUGARES_DISPONIBLES")),
+                    State = reader.GetBoolean(reader.GetOrdinal("ESTADO")),
                 };
 
                 parkings.Add(parking);

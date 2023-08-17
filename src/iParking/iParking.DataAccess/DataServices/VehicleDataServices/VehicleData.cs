@@ -1,5 +1,6 @@
 ﻿using iParking.Domain.Entities.Vehicle;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace iParking.DataAccess.DataServices.VehicleDataServices
 {
@@ -48,11 +49,13 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("sp_ingPlacas  @placa, @default, @useId, @fecharegistro, 1", connection);
+            using var command = new SqlCommand("sp_ingPlacas", connection);
+            command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@placa", vehicleInput.Placa);
             command.Parameters.AddWithValue("@default", 1);
             command.Parameters.AddWithValue("@useId", vehicleInput.KeySesion);
             command.Parameters.AddWithValue("@fecharegistro", DateTime.Now.ToString());
+            command.Parameters.AddWithValue("@estado", 1);
 
             var result = await command.ExecuteScalarAsync();
             int id = Convert.ToInt32(result);

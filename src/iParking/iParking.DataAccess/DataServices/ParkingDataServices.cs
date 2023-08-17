@@ -1,5 +1,6 @@
 ﻿using iParking.DataAccess.DbContexts;
 using iParking.DataAccess.Models;
+using iParking.Domain.ParkingModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace iParking.DataAccess.DataServices
@@ -78,6 +79,11 @@ namespace iParking.DataAccess.DataServices
             }
 
             return null;
+        }
+
+        public Task<List<NearbyParkingLot>> GetNearbyParkings()
+        {
+            throw new NotImplementedException();
         }
     }
 }

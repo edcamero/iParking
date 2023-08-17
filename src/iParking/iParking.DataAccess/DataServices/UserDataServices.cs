@@ -1,5 +1,6 @@
 ﻿using iParking.Domain.Entities.Usuario;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace iParking.DataAccess.DataServices
 {
@@ -16,10 +17,8 @@ namespace iParking.DataAccess.DataServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            var query = "SELECT * FROM TBL_USUARIOS WHERE RUT = @rut AND DV = @dv";
+            var query = string.Format("SELECT * FROM TBL_USUARIOS WHERE RUT = '{0}' AND DV = '{1}'", rut, dv);
             using var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@rut", rut);
-            command.Parameters.AddWithValue("@dv", dv);
 
             using (var reader = command.ExecuteReader())
             {
@@ -48,9 +47,8 @@ namespace iParking.DataAccess.DataServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("Select COUNT(*) from TBL_USUARIOS where rut=@rut  AND dv= @dv", connection);
-            command.Parameters.AddWithValue("@rut", rut);
-            command.Parameters.AddWithValue("@dv", dv);
+            var query = string.Format("Select COUNT(*) from TBL_USUARIOS where rut='{0}'  AND dv= '{1}'", rut, dv);
+            using var command = new SqlCommand(query, connection);
 
             var result = await command.ExecuteScalarAsync();
             int count = Convert.ToInt32(result);
@@ -62,7 +60,8 @@ namespace iParking.DataAccess.DataServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("sp_ingUsuario @rut, @dv, @nombres, @apellidos, @telefono, @clave_acceso, @mail, 1", connection);
+            using var command = new SqlCommand("sp_ingUsuario", connection);
+            command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@rut", nuevoUsuario.Rut);
             command.Parameters.AddWithValue("@dv", nuevoUsuario.DigVer);
             command.Parameters.AddWithValue("@nombres", nuevoUsuario.Nombres);
@@ -70,6 +69,7 @@ namespace iParking.DataAccess.DataServices
             command.Parameters.AddWithValue("@telefono", nuevoUsuario.Telefono);
             command.Parameters.AddWithValue("@clave_acceso", nuevoUsuario.ClaveAcceso);
             command.Parameters.AddWithValue("@mail", nuevoUsuario.Mail);
+            command.Parameters.AddWithValue("@estado", 1);
 
             var result = await command.ExecuteScalarAsync();
             int id = Convert.ToInt32(result);

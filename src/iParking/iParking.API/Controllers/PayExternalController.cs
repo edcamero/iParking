@@ -45,8 +45,8 @@ namespace iParking.API.Controllers
 
                 var response = new
                 {
-                    estatus = true,
-                    datos = new
+                    status = true,
+                    data = new
                     {
                         formasPago = await _payExtenalService.GetPaymentMethods()
                     }
@@ -58,8 +58,8 @@ namespace iParking.API.Controllers
             {
                 return BadRequest(new
                 {
-                    estatus = false,
-                    datos = new
+                    status = false,
+                    data = new
                     {
                         key_session = "0",
                         mensajeError = "Usuario o clave Invalida!"
