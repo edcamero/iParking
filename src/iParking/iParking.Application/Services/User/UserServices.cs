@@ -19,10 +19,20 @@ namespace iParking.Application.Services.User
 
             var response = new ActionResponseSession();
 
-            if(user != null)
+            if(user != null && user.Estado == 0)
             {
-                response.Message = user.Estado == 0 ? "El usuario ya se encuentra registrado pero esta deshabilitado" : "El usuario ya se encuentra registrado";
+                response.Message = "El usuario ya se encuentra registrado pero esta deshabilitado";
                 response.Code = 409;
+
+                return response;
+            }
+
+            if(user != null && user.Dv.Equals(nuevoUsuario.DigVer) && user!.Rut.Equals(nuevoUsuario.Rut) && user.ClaveAcceso.Equals(nuevoUsuario.ClaveAcceso))
+            {
+                response.Status = true;
+                response.Code = 201;
+                response.KeySession = user.IdUsuario;
+                response.Id = user.IdUsuario;
 
                 return response;
             }

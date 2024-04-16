@@ -9,7 +9,7 @@
         public string Tariff { get; set; } = null!;
         public string Schedule { get; set; } = null!;
         public string Addresss { get; set; } = "sin dirección";
-        public byte AvailablePlaces { get; set; }
+        public int AvailablePlaces { get; set; }
         public bool State { get; set; }
         public double DistanceKm { get; set; }
     }

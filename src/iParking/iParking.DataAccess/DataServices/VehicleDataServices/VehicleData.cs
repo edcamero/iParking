@@ -19,12 +19,10 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
 
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            string query = "SELECT * FROM TBL_PLACA WHERE ID_USUARIO = @IdUsuario";
+            string query = string.Format("SELECT * FROM TBL_PLACA WHERE ID_USUARIO = {0} and ESTADO=1", userId);
 
             using (SqlCommand command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@IdUsuario", userId);
-
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -45,16 +43,42 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
             return vehicles;
         }
 
-        public async Task<int> CreatedUserVehicle(VehicleUserInput vehicleInput)
+        public async Task<EVehicle> GetUserVehicle(int userId, int vehicleId)
+        {
+            EVehicle placa = new EVehicle();
+
+            using var connection = await _connectionFactory.GetConnectionAsync();
+
+            string query = string.Format("SELECT * FROM TBL_PLACA WHERE ID_USUARIO = {0} and id_placa = {1}", userId, vehicleId);
+
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    reader.Read();
+
+                    placa.IdPlaca = Convert.ToDecimal(reader["ID_PLACA"]);
+                    placa.Placa = reader["PLACA"].ToString() ?? string.Empty;
+                    placa.PlacaDefault = reader["PLACA_DEFAULT"] == DBNull.Value ? null : (decimal?)reader["PLACA_DEFAULT"];
+                    placa.IdUsuario = reader["ID_USUARIO"] == DBNull.Value ? null : (decimal?)reader["ID_USUARIO"];
+                    placa.FechaHoraCreado = reader["FECHA_HORA_CREADO"].ToString() ?? string.Empty;
+                    placa.Estado = reader["ESTADO"] == DBNull.Value ? null : (decimal?)reader["ESTADO"];
+                }
+            }
+
+            return placa;
+        }
+
+        public async Task<int> CreatedUserVehicle(VehicleUserInput vehicleInput, int isDefault)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
             using var command = new SqlCommand("sp_ingPlacas", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@placa", vehicleInput.Placa);
-            command.Parameters.AddWithValue("@default", 1);
-            command.Parameters.AddWithValue("@useId", vehicleInput.KeySesion);
-            command.Parameters.AddWithValue("@fecharegistro", DateTime.Now.ToString());
+            command.Parameters.AddWithValue("@placa_default", isDefault);
+            command.Parameters.AddWithValue("@id_usuario", vehicleInput.KeySession);
+            command.Parameters.AddWithValue("@fecha_hora_creado", DateTime.Now.ToString());
             command.Parameters.AddWithValue("@estado", 1);
 
             var result = await command.ExecuteScalarAsync();
@@ -67,23 +91,19 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("UPDATE TBL_PLACA SET PLACA_DEFAULT=0 WHERE id_usuario = @userId;" +
-                "UPDATE TBL_PLACA SET PLACA_DEFAULT =1 WHERE id_placa = @vehicleId", connection);
-            command.Parameters.AddWithValue("@userId", userId);
-            command.Parameters.AddWithValue("@vehicleId", vehicleId);
+            var query = string.Format("UPDATE TBL_PLACA SET PLACA_DEFAULT=0 WHERE id_usuario = {0}; UPDATE TBL_PLACA SET PLACA_DEFAULT =1 WHERE id_placa = {1}", userId, vehicleId);
+            using var command = new SqlCommand(query, connection);
 
             var result = await command.ExecuteNonQueryAsync();
 
-            return  Convert.ToInt32(result) > 0;           
+            return Convert.ToInt32(result) > 0;
         }
 
         public async Task<bool> DeleteUserVehicle(int userId, int vehicleId)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
-
-            using var command = new SqlCommand("UPDATE TBL_PLACA SET ESTADO = 0 WHERE id_usuario = @userId and WHERE id_placa = @vehicleId", connection);
-            command.Parameters.AddWithValue("@userId", userId);
-            command.Parameters.AddWithValue("@vehicleId", vehicleId);
+            var query = string.Format("UPDATE TBL_PLACA SET ESTADO = 0 WHERE id_usuario = {0} and id_placa = {1}", userId, vehicleId);
+            using var command = new SqlCommand(query, connection);
 
             var result = await command.ExecuteNonQueryAsync();
 

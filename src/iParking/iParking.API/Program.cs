@@ -1,4 +1,3 @@
-using iParking.API.Extensions;
 using iParking.Application;
 using iParking.DataAccess;
 using iParking.Infrastructure.Services;
@@ -17,7 +16,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddHttpClient();
 
 builder.Services.AddiParkingDataServices(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection)));
-
+        
 builder.Services.AddScoped<IIntegrationServiceClient, IntegrationServiceClient>();
 
 builder.Services.AddiParkingAplicationServices();

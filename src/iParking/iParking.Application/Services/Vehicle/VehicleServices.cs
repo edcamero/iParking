@@ -27,6 +27,7 @@ namespace iParking.Application.Services.Vehicle
             }
             else
             {
+                response.Status = true;
                 response.Message = string.Format("El usuario tiene {0} vehiculos registrados", vehicles.Count);
                 response.Code = 200;
             }
@@ -35,11 +36,11 @@ namespace iParking.Application.Services.Vehicle
         }
 
 
-        public async Task<ActionResponseSession> CreatedUserVehicle(VehicleUserInput vehicleInput)
+        public async Task<(EVehicle?, ActionResponseSession)> CreatedUserVehicle(VehicleUserInput vehicleInput)
         {
-            var vehiclesUser = await _vehicleDataServices.GetUserVehicles(int.Parse(vehicleInput.KeySesion));
+            var vehiclesUser = await _vehicleDataServices.GetUserVehicles(vehicleInput.KeySession);
 
-            var vehicleUser = vehiclesUser.Count != 0 ? vehiclesUser.First(x => x.Placa == vehicleInput.Placa) : null;
+            var vehicleUser = vehiclesUser.Count != 0 ? vehiclesUser.SingleOrDefault(x => x.Placa == vehicleInput.Placa) : null;
 
             var response = new ActionResponseSession();
 
@@ -48,17 +49,17 @@ namespace iParking.Application.Services.Vehicle
                 response.Message = vehicleUser.Estado == 0 ? "El usuario ya se tiene vehiculo registrado pero esta deshabilitado" : "El vehiculo ya se encuentra registrado";
                 response.Code = 409;
 
-                return response;
+                return (null, response);
             }
 
-            var vehicle = await _vehicleDataServices.CreatedUserVehicle(vehicleInput);
-
-            if (vehicle > 0)
+            var vehicleId = await _vehicleDataServices.CreatedUserVehicle(vehicleInput, vehiclesUser.Any() ? 0 : 1);
+            var vehicleSaved = await _vehicleDataServices.GetUserVehicle(vehicleInput.KeySession, vehicleId);
+            if (vehicleId > 0)
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = vehicle;
-                response.Id = vehicle;
+                response.KeySession = vehicleInput.KeySession;
+                response.Id = vehicleId;
 
             }
             else
@@ -66,7 +67,7 @@ namespace iParking.Application.Services.Vehicle
                 response.Message = "Error tratando de registrar el vehiculo";
             }
 
-            return response;
+            return (vehicleSaved, response);
         }
 
         public async Task<ActionResponseSession> UpdatedUserVehicleDefault(int userId, int vehicleId)

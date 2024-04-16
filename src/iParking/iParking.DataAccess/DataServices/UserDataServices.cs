@@ -34,6 +34,7 @@ namespace iParking.DataAccess.DataServices
                         Mail = Convert.ToString(reader["MAIL"]) ?? string.Empty,
                         Telefono = Convert.ToString(reader["TELEFONO"]) ?? string.Empty,
                         Estado = Convert.ToInt32(reader["ESTADO"]),
+                        ClaveAcceso = Convert.ToString(reader["CLAVE_ACCESO"]) ?? string.Empty
                     };
 
                     return usuario;

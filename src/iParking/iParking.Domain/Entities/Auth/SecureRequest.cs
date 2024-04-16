@@ -2,6 +2,6 @@
 {
     public class SecureRequest
     {
-        public string KeySession { get; set; }
+        public string KeySession { get; set; } = null!;
     }
 }

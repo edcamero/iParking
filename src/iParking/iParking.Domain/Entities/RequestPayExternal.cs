@@ -2,9 +2,9 @@
 {
     public class RequestPayExternal
     {
-        public string reference_id { get; set; }
-        public string email { get; set; }
-        public string rut { get; set; }
+        public required string reference_id { get; set; } 
+        public required string email { get; set; }
+        public required string rut { get; set; }
         public string phone { get; set; }
         public string first_name { get; set; }
         public string last_name { get; set; }
