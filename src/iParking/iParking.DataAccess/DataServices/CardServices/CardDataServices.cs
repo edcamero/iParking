@@ -17,11 +17,8 @@ namespace iParking.DataAccess.DataServices.CardServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            var query = "Select * from TBL_TARJETA where numero_tarjeta= @numeroTarjeta AND cvv= @cvv AND tipo= @tipo";
+            var query = string.Format("Select * from TBL_TARJETA where numero_tarjeta= {0} AND cvv= {1} AND tipo= {2}", numero_tarjeta.Trim(), cvv.Trim(), tipo.Trim());
             using var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@numeroTarjeta", numero_tarjeta.Trim());
-            command.Parameters.AddWithValue("@cvv", cvv.Trim());
-            command.Parameters.AddWithValue("@tipo", tipo.Trim());
 
             using (var reader = command.ExecuteReader())
             {
@@ -107,9 +104,8 @@ namespace iParking.DataAccess.DataServices.CardServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("UPDATE TBL_TARJETA SET DEFAULT_TARJETA = 0 WHERE ID_USUARIO = @userId and  id_tarjeta = @creditCardId", connection);
-            command.Parameters.AddWithValue("@userId", userId);
-            command.Parameters.AddWithValue("@creditCardId", creditCardId);
+            var query = string.Format("UPDATE TBL_TARJETA SET DEFAULT_TARJETA = 0 WHERE ID_USUARIO ={0} and  id_tarjeta = {1}", userId, creditCardId);
+            using var command = new SqlCommand(query, connection);
 
             var result = await command.ExecuteNonQueryAsync();
 
@@ -119,11 +115,8 @@ namespace iParking.DataAccess.DataServices.CardServices
         public async Task<bool> UpdatedCreditCardDefault(int userId, int creditCardId)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
-
-            using var command = new SqlCommand("UPDATE TBL_TARJETA SET DEFAULT_TARJETA = 0 WHERE id_usuario = @userId;" +
-                "UPDATE TBL_TARJETA SET DEFAULT_TARJETA=1 WHERE id_tarjeta = @vehicleId", connection);
-            command.Parameters.AddWithValue("@userId", userId);
-            command.Parameters.AddWithValue("@vehicleId", creditCardId);
+            var query = string.Format("UPDATE TBL_TARJETA SET DEFAULT_TARJETA = 0 WHERE id_usuario = {0}; UPDATE TBL_TARJETA SET DEFAULT_TARJETA=1 WHERE id_tarjeta = {1}", userId, creditCardId);
+            using var command = new SqlCommand(query, connection);
 
             var result = await command.ExecuteNonQueryAsync();
 

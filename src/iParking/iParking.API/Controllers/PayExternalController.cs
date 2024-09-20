@@ -1,5 +1,4 @@
-﻿using Azure;
-using iParking.Application;
+﻿using iParking.Application.ServicesExternal;
 using iParking.Domain.Entities;
 using iParking.Domain.Entities.Payment;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +29,31 @@ namespace iParking.API.Controllers
 
                 return BadRequest(reponsePay);
             }
-            catch
+            catch(Exception ex) 
             {
                 return StatusCode(500, "Error de servidor");
-            }         
+            }
+        }
+
+        [HttpGet]
+        [Route("api/v1/payment")]
+        public async Task<IActionResult> GetPayment(string order_id)
+        {
+            try
+            {
+                var reponsePay = await _payExtenalService.GetPayment(order_id);
+
+                if (reponsePay.Status)
+                {
+                    return Ok(reponsePay);
+                }
+
+                return BadRequest(reponsePay);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error de servidor");
+            }
         }
 
         [HttpPost]
@@ -45,8 +65,8 @@ namespace iParking.API.Controllers
 
                 var response = new
                 {
-                    estatus = true,
-                    datos = new
+                    status = true,
+                    data = new
                     {
                         formasPago = await _payExtenalService.GetPaymentMethods()
                     }
@@ -58,14 +78,56 @@ namespace iParking.API.Controllers
             {
                 return BadRequest(new
                 {
-                    estatus = false,
-                    datos = new
+                    status = false,
+                    data = new
                     {
-                        key_session = "0",
+                        keySession = "0",
                         mensajeError = "Usuario o clave Invalida!"
                     }
                 });
             }
+        }
+
+        [HttpPost]
+        [Route("api/v1/payment/detail")]
+        public IActionResult GetPaymentDetail([FromForm] PayDetails request)
+        {
+
+            string entryTime = "10:10";
+            string exitTime = "10:20";
+            string stayDuration = "00:10";
+            string amount = "150";
+            string location = "PZA LOS HEROES 1";
+
+            var result = new
+            {
+                status = true,
+                data = new
+                {
+                    Entry = entryTime,
+                    Exit = exitTime,
+                    StayDuration = stayDuration,
+                    Amount = amount,
+                    Location = location
+                }
+            };
+
+
+            return Ok(result);
+
+            //else
+            //{
+            //    var errorResult = new
+            //    {
+            //        status = false,
+            //        data = new
+            //        {
+            //            errorMessage = "Error!"
+            //        }
+            //    };
+
+            //    return Ok(errorResult);
+            //}
         }
     }
 }

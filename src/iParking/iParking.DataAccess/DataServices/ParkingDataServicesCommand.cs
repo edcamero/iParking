@@ -1,11 +1,14 @@
 ﻿using iParking.DataAccess.Models;
+using iParking.Domain.ParkingModels;
 using Microsoft.Data.SqlClient;
+using System;
 
 namespace iParking.DataAccess.DataServices
 {
     public class ParkingDataServicesCommand : IParkingDataServices
     {
         private readonly ISqlConnectionFactory _connectionFactory;
+        private string FormateDateString = "yyyy-MM-dd HH:mm:ss";
 
         public ParkingDataServicesCommand(ISqlConnectionFactory connectionFactory)
         {
@@ -15,11 +18,8 @@ namespace iParking.DataAccess.DataServices
         public async Task<Parking> CreateParking(Parking newParking)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
-
-            using var command = new SqlCommand("INSERT INTO Parking (name, location, createdAt) VALUES (@name, @location, @createdAt); SELECT SCOPE_IDENTITY();", connection);
-            command.Parameters.AddWithValue("@name", newParking.Name);
-            command.Parameters.AddWithValue("@location", newParking.Location);
-            command.Parameters.AddWithValue("@createdAt", newParking.CreatedAt);
+            var query = string.Format("INSERT INTO Parking (name, location, createdAt) VALUES ('{0}', '{1}', '{2}'); SELECT SCOPE_IDENTITY();", newParking.Name, newParking.Location, newParking.CreatedAt.ToString(FormateDateString));
+            using var command = new SqlCommand(query, connection);
 
             newParking.Id = Convert.ToInt32(command.ExecuteScalar());
             
@@ -29,12 +29,12 @@ namespace iParking.DataAccess.DataServices
         public async Task<Parking?> GetParking(int id)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
-            await connection.OpenAsync();
+            var query = string.Format("SELECT * FROM Parking WHERE id = {0};", id);
 
-            using var command = new SqlCommand("SELECT * FROM Parking WHERE id = @id;", connection);
-            command.Parameters.AddWithValue("@id", id);
+            using var command = new SqlCommand(query, connection);
 
             using var reader = await command.ExecuteReaderAsync();
+
             if (await reader.ReadAsync())
             {
                 var parking = new Parking
@@ -76,16 +76,42 @@ namespace iParking.DataAccess.DataServices
 
             return parkings;
         }
+        
+        public async Task<List<NearbyParkingLot>> GetNearbyParkings()
+        {
+            using var connection = await _connectionFactory.GetConnectionAsync();
+
+            using var command = new SqlCommand("SELECT * FROM TBL_LUGARES WHERE ESTADO = 1 ", connection);
+
+            var parkings = new List<NearbyParkingLot>();
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var parking = new NearbyParkingLot
+                {
+                    Id=Convert.ToInt32(reader["ID_LUGAR"]),
+                    Name = reader.GetString(reader.GetOrdinal("NOMBRE")),
+                    Latitude = reader.GetDouble(reader.GetOrdinal("LATITUD")),
+                    Longitude = reader.GetDouble(reader.GetOrdinal("LONGITUD")),
+                    Tariff = reader.GetString(reader.GetOrdinal("TARIFA")),
+                    Schedule = reader.GetString(reader.GetOrdinal("HORARIO")),
+                    AvailablePlaces = Convert.ToInt32(reader["LUGARES_DISPONIBLES"]),
+                    State = reader.GetBoolean(reader.GetOrdinal("ESTADO")),
+                };
+
+                parkings.Add(parking);
+            }
+
+            return parkings;
+        }
 
         public async Task<Parking?> UpdateParking(Parking updateParking)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("UPDATE Parking SET name = @name, location = @location, updatedAt = @updatedAt WHERE id = @id;", connection);
-            command.Parameters.AddWithValue("@name", updateParking.Name);
-            command.Parameters.AddWithValue("@location", updateParking.Location);
-            command.Parameters.AddWithValue("@updatedAt", updateParking.UpdatedAt);
-            command.Parameters.AddWithValue("@id", updateParking.Id);
+            var query = string.Format("UPDATE Parking SET name = '{0}', location = '{1}', updatedAt = '{2}' WHERE id = {3};", updateParking.Name, updateParking.Location, updateParking.UpdatedAt?.ToString(FormateDateString), updateParking.Id);
+
+            using var command = new SqlCommand(query, connection);
 
             var rowsAffected = await command.ExecuteNonQueryAsync();
             if (rowsAffected > 0)
@@ -100,10 +126,12 @@ namespace iParking.DataAccess.DataServices
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
-            using var command = new SqlCommand("DELETE FROM Parking WHERE id = @id;", connection);
-            command.Parameters.AddWithValue("@id", id);
+            var query = string.Format("DELETE FROM Parking WHERE id = {0};",id);
+
+            using var command = new SqlCommand(query, connection);
 
             var rowsAffected = await command.ExecuteNonQueryAsync();
+
             if (rowsAffected > 0)
             {
                 var deletedParking = new Parking { Id = id };

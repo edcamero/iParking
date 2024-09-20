@@ -1,5 +1,6 @@
 ﻿using iParking.Application.Services.Parking;
 using iParking.Domain.Parking;
+using iParking.Domain.ParkingModels;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -35,6 +36,30 @@ namespace iParking.API.Controllers
            
         }
 
+        [Route("nearby")]
+        [HttpPost]
+        public async Task<IActionResult> GetAsync([FromForm] NearbyParkingLotInput input)
+        {
+            try
+            {
+                var result =  await _parkingServices.GetNearbyParkings(input);
+
+                var response = new
+                {
+                    status = true,
+                    data = result
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error al consultar los parquederos");
+                return StatusCode(500, "Error de servidor");
+            }
+           
+        }
+
         // GET api/<ParkingController>/5
         [HttpGet("{id}")]
         public async Task<DataAccess.Models.Parking> Get(int id)
@@ -44,7 +69,7 @@ namespace iParking.API.Controllers
 
         // POST api/<ParkingController>
         [HttpPost]
-        public async Task<DataAccess.Models.Parking> Post([FromBody] ParkingInputDTO parkingInput)
+        public async Task<DataAccess.Models.Parking> Post( ParkingInputDTO parkingInput)
         {
             return await _parkingServices.CreateParking(parkingInput);
         }

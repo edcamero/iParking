@@ -28,10 +28,10 @@ namespace iParking.API.Controllers
                 {
                     var response = new
                     {
-                        estatus = true,
-                        datos = new
+                        status = true,
+                        data = new
                         {
-                            key_session = responseUser.KeySession,
+                            keySession = responseUser.KeySession,
                             id = responseUser.Id,
                             rut = newuser.Rut,
                             digVer = newuser.DigVer,
@@ -55,7 +55,7 @@ namespace iParking.API.Controllers
                     }
                 };
 
-                return BadRequest(responseUser);
+                return BadRequest(responseHttp);
             }
             catch(Exception ex)
             {
