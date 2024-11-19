@@ -33,8 +33,8 @@ CREATE TABLE [dbo].[TBL_USUARIOS](
 	[NOMBRES] [nvarchar](30) NULL,
 	[APELLIDOS] [nvarchar](40) NULL,
 	[TELEFONO] [nvarchar](40) NULL,
-	[CLAVE_ACCESO] [nvarchar](8) NULL,
-	[MAIL] [nvarchar](20) NULL,
+	[CLAVE_ACCESO] [nvarchar](150) NULL,
+	[MAIL] [nvarchar](150) NULL,
 	[ESTADO] [numeric](18, 0) NULL,
  CONSTRAINT [PK_TBL_USUARIOS] PRIMARY KEY CLUSTERED 
 (
