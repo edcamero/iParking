@@ -1,16 +1,19 @@
 ﻿using iParking.DataAccess.DataServices;
 using iParking.Domain.Entities;
 using iParking.Domain.Entities.Usuario;
+using iParking.Infrastructure.Security;
 
 namespace iParking.Application.Services.User
 {
-    public  class UserServices: IUserServices
+    public class UserServices : IUserServices
     {
         private readonly IUserDataServices _userDataServices;
+        private readonly ISecurityHash _securityHash;
 
-        public UserServices(IUserDataServices userDataServices)
+        public UserServices(IUserDataServices userDataServices, ISecurityHash securityHash)
         {
             _userDataServices = userDataServices ?? throw new ArgumentNullException(nameof(userDataServices));
+            _securityHash = securityHash ?? throw new ArgumentNullException(nameof(securityHash));
         }
 
         public async Task<ActionResponseSession> CreatedUser(UsuarioNuevo nuevoUsuario)
@@ -19,7 +22,7 @@ namespace iParking.Application.Services.User
 
             var response = new ActionResponseSession();
 
-            if(user != null && user.Estado == 0)
+            if (user != null && user.Estado == 0)
             {
                 response.Message = "El usuario ya se encuentra registrado pero esta deshabilitado";
                 response.Code = 409;
@@ -27,7 +30,7 @@ namespace iParking.Application.Services.User
                 return response;
             }
 
-            if(user != null && user.Dv.Equals(nuevoUsuario.DigVer) && user!.Rut.Equals(nuevoUsuario.Rut) && user.ClaveAcceso.Equals(nuevoUsuario.ClaveAcceso))
+            if (user != null && user.Dv.Equals(nuevoUsuario.DigVer) && user!.Rut.Equals(nuevoUsuario.Rut) && user.ClaveAcceso.Equals(nuevoUsuario.ClaveAcceso))
             {
                 response.Status = true;
                 response.Code = 201;
@@ -36,10 +39,10 @@ namespace iParking.Application.Services.User
 
                 return response;
             }
+            nuevoUsuario.ClaveAcceso = _securityHash.GenerateHash(nuevoUsuario.ClaveAcceso);
+            var userId = await _userDataServices.CreatedUser(nuevoUsuario);
 
-           var userId = await _userDataServices.CreatedUser(nuevoUsuario);            
-
-            if(userId > 0)
+            if (userId > 0)
             {
                 response.Status = true;
                 response.Code = 201;
@@ -53,6 +56,13 @@ namespace iParking.Application.Services.User
             }
 
             return response;
+        }
+
+
+        public async Task<Usuario?> GetUser(string mail)
+        {
+            return await _userDataServices.GetUserAsync(mail);
+
         }
     }
 }

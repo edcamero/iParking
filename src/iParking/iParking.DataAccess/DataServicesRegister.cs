@@ -11,7 +11,7 @@ namespace iParking.DataAccess
         {
             services.AddTransient<ISqlConnectionFactory>(provider => new SqlConnectionFactory(connectionStringName ));
             services.AddScoped<IParkingDataServices, ParkingDataServicesCommand>();
-            services.AddScoped<IUserDataServices, UserDataServices>();
+            services.AddScoped<IUserDataServices, UserDataServices>();          
             services.AddScoped<ICardDataServices, CardDataServices>();
             services.AddScoped<IVehicleDataServices, VehicleData>();
         }

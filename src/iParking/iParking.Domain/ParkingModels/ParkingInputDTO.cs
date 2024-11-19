@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace iParking.Domain.Parking
+namespace iParking.Domain.ParkingModels
 {
     public class ParkingInputDTO
     {

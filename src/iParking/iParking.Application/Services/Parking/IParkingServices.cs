@@ -1,5 +1,4 @@
-﻿using iParking.Domain.Parking;
-using iParking.Domain.ParkingModels;
+﻿using iParking.Domain.ParkingModels;
 
 namespace iParking.Application.Services.Parking
 {

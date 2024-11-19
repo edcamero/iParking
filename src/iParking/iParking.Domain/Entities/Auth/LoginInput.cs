@@ -8,7 +8,6 @@
         public string ImeiPos { get; set; }
         public string SerieCelular { get; set; }
         public string VersionApp { get; set; }
-
       
     }
 

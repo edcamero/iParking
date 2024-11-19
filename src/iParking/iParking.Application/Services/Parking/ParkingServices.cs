@@ -1,5 +1,4 @@
 ﻿using iParking.DataAccess.DataServices;
-using iParking.Domain.Parking;
 using iParking.Domain.ParkingModels;
 using ParkingData = iParking.DataAccess.Models.Parking;
 

@@ -1,10 +1,11 @@
-﻿using iParking.Domain.Entities.Usuario;
+﻿using iParking.Domain.Entities.Auth;
+using iParking.Domain.Entities.Usuario;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace iParking.DataAccess.DataServices
 {
-    public class UserDataServices: IUserDataServices
+    public class UserDataServices : IUserDataServices
     {
         private readonly ISqlConnectionFactory _connectionFactory;
 
@@ -35,6 +36,37 @@ namespace iParking.DataAccess.DataServices
                         Telefono = Convert.ToString(reader["TELEFONO"]) ?? string.Empty,
                         Estado = Convert.ToInt32(reader["ESTADO"]),
                         ClaveAcceso = Convert.ToString(reader["CLAVE_ACCESO"]) ?? string.Empty
+                    };
+
+                    return usuario;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<Usuario?> GetUserAsync(string mail)
+        {
+            using var connection = await _connectionFactory.GetConnectionAsync();
+
+            var query = string.Format("SELECT * FROM TBL_USUARIOS WHERE MAIL = '{0}'", mail);
+            using var command = new SqlCommand(query, connection);
+
+            using (var reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    Usuario usuario = new Usuario
+                    {
+                        IdUsuario = Convert.ToInt32(reader["ID_USUARIO"]),
+                        Rut = Convert.ToString(reader["RUT"]) ?? string.Empty,
+                        Dv = Convert.ToString(reader["DV"]) ?? string.Empty,   
+                        Nombres = Convert.ToString(reader["NOMBRES"]) ?? string.Empty,
+                        Apellidos = Convert.ToString(reader["APELLIDOS"]) ?? string.Empty,
+                        Mail = Convert.ToString(reader["MAIL"]) ?? string.Empty,
+                        Telefono = Convert.ToString(reader["TELEFONO"]) ?? string.Empty,
+                        Estado = Convert.ToInt32(reader["ESTADO"]),
+                        ClaveAcceso = string.Empty
                     };
 
                     return usuario;
@@ -77,5 +109,35 @@ namespace iParking.DataAccess.DataServices
 
             return id;
         }
+
+        public async Task<bool> Login(LoginInput login)
+        {
+            try
+            {
+                using var connection = await _connectionFactory.GetConnectionAsync();
+                using var command = new SqlCommand(
+                    "SELECT ID_USUARIO FROM TBL_USUARIOS WHERE MAIL = @mail AND CLAVE_ACCESO = @password",
+                    connection);
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.Add(new SqlParameter("@mail", SqlDbType.VarChar) { Value = login.Mail });
+                command.Parameters.Add(new SqlParameter("@password", SqlDbType.VarChar) { Value = login.ClaveAcceso });
+
+                var result = await command.ExecuteScalarAsync();
+
+                if (result != null && int.TryParse(result.ToString(), out int id))
+                {
+                    return id > 0;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Manejo del error
+                throw new Exception("Error al intentar iniciar sesión", ex);
+            }
+        }
+
     }
 }

@@ -1,4 +1,6 @@
-﻿using iParking.Domain.Entities.Auth;
+﻿using iParking.Application.Services.Auth;
+using iParking.Application.Services.User;
+using iParking.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace iParking.API.Controllers
@@ -7,35 +9,41 @@ namespace iParking.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
+        private readonly IAuthServices _authServices;
+        private readonly IUserServices _userServices;
 
-        public AuthController(ILogger<AuthController> logger)
+        public AuthController(ILogger<AuthController> logger, IAuthServices authServices, IUserServices userServices)
         {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _authServices = authServices ?? throw new ArgumentNullException(nameof(authServices));
+            _userServices = userServices ?? throw new ArgumentNullException(nameof(userServices));
         }
 
         [Route("api/v1/auth/login")]
         [HttpPost]
-        public Task<IActionResult> Login([FromForm] LoginInput login)
+        public async Task<IActionResult> Login([FromForm] LoginInput login)
         {
+            var isAuth = await _authServices.Login(login);
 
-            if (login.KeySession == "123456789012345")// falta definir este login 
+            if (isAuth)
             {
+                var user = await _userServices.GetUser(login.Mail);
                 var response = new
                 {
                     status = true,
                     data = new
                     {
-                        keySession = "123456789012345",
-                        rut = "11111111",
-                        digVer = "k",
-                        mail = "alvaro@ok.cl",
-                        nombres = "ALVARO",
-                        apellidos = "B.S",
-                        telefono = "51 51213131"
+                        keySession = user.IdUsuario.ToString(),
+                        rut = user.Rut,
+                        digVer = user.Dv,
+                        mail = user.Mail,
+                        nombres = user.Nombres,
+                        apellidos = user.Apellidos,
+                        telefono = user.Telefono,
                     }
                 };
 
-                return Task.FromResult<IActionResult>(Ok(response));
+                return Ok(response);
             }
             else
             {
@@ -48,7 +56,7 @@ namespace iParking.API.Controllers
                         errorMessage = "Usuario o clave Invalida!"
                     }
                 };
-                return Task.FromResult<IActionResult>(BadRequest(response));
+                return BadRequest(response);
             }
         }
 

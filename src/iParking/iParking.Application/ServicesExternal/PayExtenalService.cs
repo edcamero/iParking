@@ -81,7 +81,7 @@ namespace iParking.Application.ServicesExternal
                 { KlapService.Security.Type, KlapService.Security.Value }
             };
 
-            var response = await _integrationServiceClient.SendRequestAsync(requestURl, HttpMethod.Post, headers);
+            var response = await _integrationServiceClient.SendRequestAsync(requestURl, HttpMethod.Get, headers);
 
             if (response.IsSuccessStatusCode)
             {

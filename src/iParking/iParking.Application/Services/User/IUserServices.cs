@@ -6,5 +6,6 @@ namespace iParking.Application.Services.User
     public interface IUserServices
     {
         Task<ActionResponseSession> CreatedUser(UsuarioNuevo nuevoUsuario);
+        Task<Usuario?> GetUser(string mail);
     }
 }

@@ -1,4 +1,5 @@
-﻿using iParking.Domain.Entities.Usuario;
+﻿using iParking.Domain.Entities.Auth;
+using iParking.Domain.Entities.Usuario;
 
 namespace iParking.DataAccess.DataServices
 {
@@ -7,5 +8,8 @@ namespace iParking.DataAccess.DataServices
         Task<bool> CheckIfUserExists(string rut, string dv);
         Task<Usuario?> GetUserAsync(string? rut, string? dv);
         Task<int> CreatedUser(UsuarioNuevo nuevoUsuario);
+        Task<bool> Login(LoginInput login);
+
+        Task<Usuario?> GetUserAsync(string mail);
     }
 }

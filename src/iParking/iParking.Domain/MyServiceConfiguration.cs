@@ -1,4 +1,4 @@
-﻿namespace iParking.Infrastructure.Identity
+﻿namespace iParking.Domain
 {
     public class MyServiceConfiguration
     {
