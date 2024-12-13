@@ -1,16 +1,19 @@
 ﻿using iParking.DataAccess.DataServices.CardServices;
 using iParking.Domain.Entities;
 using iParking.Domain.Entities.Payment;
+using iParking.Infrastructure.Security;
 
 namespace iParking.Application.Services.CreditCard
 {
     public class CreditCardServices : ICreditCardServices
     {
         private readonly ICardDataServices _cardDataServices;
+        private readonly ITokenService _tokenService;
 
-        public CreditCardServices(ICardDataServices cardDataServices)
+        public CreditCardServices(ICardDataServices cardDataServices, ITokenService tokenService)
         {
             _cardDataServices = cardDataServices;
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         public async Task<ActionResponse> CreatedCreditCard(CreditCardInput creditCardNew)
@@ -122,7 +125,7 @@ namespace iParking.Application.Services.CreditCard
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = userId;
+                response.KeySession = _tokenService.GenerateToken(userId.ToString()); ;
                 response.Id = creditCardId;
             }
             else

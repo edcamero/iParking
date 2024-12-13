@@ -69,7 +69,7 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
             return placa;
         }
 
-        public async Task<int> CreatedUserVehicle(VehicleUserInput vehicleInput, int isDefault)
+        public async Task<int> CreatedUserVehicle(VehicleUserInsert vehicleInput, int isDefault)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
@@ -77,7 +77,7 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@placa", vehicleInput.Placa);
             command.Parameters.AddWithValue("@placa_default", isDefault);
-            command.Parameters.AddWithValue("@id_usuario", vehicleInput.KeySession);
+            command.Parameters.AddWithValue("@id_usuario", vehicleInput.UserId);
             command.Parameters.AddWithValue("@fecha_hora_creado", DateTime.Now.ToString());
             command.Parameters.AddWithValue("@estado", 1);
 

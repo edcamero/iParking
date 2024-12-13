@@ -9,11 +9,13 @@ namespace iParking.Application.Services.User
     {
         private readonly IUserDataServices _userDataServices;
         private readonly ISecurityHash _securityHash;
+        private readonly ITokenService _tokenService;
 
-        public UserServices(IUserDataServices userDataServices, ISecurityHash securityHash)
+        public UserServices(IUserDataServices userDataServices, ISecurityHash securityHash, ITokenService tokenService)
         {
             _userDataServices = userDataServices ?? throw new ArgumentNullException(nameof(userDataServices));
             _securityHash = securityHash ?? throw new ArgumentNullException(nameof(securityHash));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         public async Task<ActionResponseSession> CreatedUser(UsuarioNuevo nuevoUsuario)
@@ -34,7 +36,7 @@ namespace iParking.Application.Services.User
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = user.IdUsuario;
+                response.KeySession = _tokenService.GenerateToken(user.IdUsuario.ToString());
                 response.Id = user.IdUsuario;
 
                 return response;
@@ -46,7 +48,7 @@ namespace iParking.Application.Services.User
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = userId;
+                response.KeySession = _tokenService.GenerateToken(userId.ToString()); ;
                 response.Id = userId;
 
             }

@@ -1,7 +1,9 @@
 ﻿using iParking.Application.Services.Auth;
 using iParking.Application.Services.User;
 using iParking.Domain.Entities.Auth;
+using iParking.Infrastructure.Security;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace iParking.API.Controllers
 {
@@ -11,12 +13,14 @@ namespace iParking.API.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthServices _authServices;
         private readonly IUserServices _userServices;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(ILogger<AuthController> logger, IAuthServices authServices, IUserServices userServices)
+        public AuthController(ILogger<AuthController> logger, IAuthServices authServices, IUserServices userServices, ITokenService tokenService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _authServices = authServices ?? throw new ArgumentNullException(nameof(authServices));
             _userServices = userServices ?? throw new ArgumentNullException(nameof(userServices));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         [Route("api/v1/auth/login")]
@@ -28,12 +32,17 @@ namespace iParking.API.Controllers
             if (isAuth)
             {
                 var user = await _userServices.GetUser(login.Mail);
+
+                if (user is null) {
+                    throw new Exception("no existe");
+                }
+
                 var response = new
                 {
                     status = true,
                     data = new
                     {
-                        keySession = user.IdUsuario.ToString(),
+                        keySession = _tokenService.GenerateToken(user.IdUsuario.ToString()),
                         rut = user.Rut,
                         digVer = user.Dv,
                         mail = user.Mail,
@@ -64,7 +73,9 @@ namespace iParking.API.Controllers
         [HttpPost]
         public IActionResult Logout([FromForm] LogoutInput logout)
         {
-            if (logout.KeySession == "123456789012345")
+            var claimsPrincipal = _tokenService.ValidateToken(logout.KeySession);
+
+            if (claimsPrincipal != null)
             {
                 return Ok(new { estatus = true });
             }

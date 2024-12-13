@@ -1,5 +1,7 @@
 using iParking.Application;
 using iParking.DataAccess;
+using iParking.Domain.Entities.Auth;
+using iParking.Infrastructure.Security;
 using iParking.Infrastructure.Services;
 using Serilog;
 
@@ -18,7 +20,11 @@ builder.Services.AddHttpClient();
 builder.Services.AddiParkingDataServices(builder.Configuration.GetConnectionString(IParkingConnection) ?? throw new ArgumentNullException(nameof(IParkingConnection)));
         
 builder.Services.AddScoped<IIntegrationServiceClient, IntegrationServiceClient>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+builder.Services.AddAuthenticationConfigureJWT(jwtOptions);
 builder.Services.AddiParkingAplicationServices();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

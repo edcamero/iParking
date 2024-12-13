@@ -1,16 +1,21 @@
 ﻿using iParking.DataAccess.DataServices.VehicleDataServices;
 using iParking.Domain.Entities;
 using iParking.Domain.Entities.Vehicle;
+using iParking.Infrastructure.Security;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace iParking.Application.Services.Vehicle
 {
     public class VehicleServices : IVehicleServices
     {
         private readonly IVehicleDataServices _vehicleDataServices;
+        private readonly ITokenService _tokenService;
 
-        public VehicleServices(IVehicleDataServices vehicleDataServices)
+        public VehicleServices(IVehicleDataServices vehicleDataServices, ITokenService tokenService)
         {
             _vehicleDataServices = vehicleDataServices;
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         public async Task<(List<EVehicle>, ActionResponse)> GetUserVehicles(int userId)
@@ -38,7 +43,9 @@ namespace iParking.Application.Services.Vehicle
 
         public async Task<(EVehicle?, ActionResponseSession)> CreatedUserVehicle(VehicleUserInput vehicleInput)
         {
-            var vehiclesUser = await _vehicleDataServices.GetUserVehicles(vehicleInput.KeySession);
+            var userId = _tokenService.GetUserIdFromToken(vehicleInput.KeySession);
+
+            var vehiclesUser = await _vehicleDataServices.GetUserVehicles(userId);
 
             var vehicleUser = vehiclesUser.Count != 0 ? vehiclesUser.SingleOrDefault(x => x.Placa == vehicleInput.Placa) : null;
 
@@ -52,8 +59,14 @@ namespace iParking.Application.Services.Vehicle
                 return (null, response);
             }
 
-            var vehicleId = await _vehicleDataServices.CreatedUserVehicle(vehicleInput, vehiclesUser.Any() ? 0 : 1);
-            var vehicleSaved = await _vehicleDataServices.GetUserVehicle(vehicleInput.KeySession, vehicleId);
+            var newVehicle = new VehicleUserInsert()
+            {
+                UserId = userId,
+                Placa = vehicleInput.Placa
+            };
+
+            var vehicleId = await _vehicleDataServices.CreatedUserVehicle(newVehicle, vehiclesUser.Any() ? 0 : 1);
+            var vehicleSaved = await _vehicleDataServices.GetUserVehicle(userId, vehicleId);
             if (vehicleId > 0)
             {
                 response.Status = true;
@@ -104,7 +117,7 @@ namespace iParking.Application.Services.Vehicle
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = userId;
+                response.KeySession = _tokenService.GenerateToken(userId.ToString());
                 response.Id = vehicleId;
             }
             else
@@ -149,7 +162,7 @@ namespace iParking.Application.Services.Vehicle
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = userId;
+                response.KeySession = _tokenService.GenerateToken(userId.ToString()); ;
                 response.Id = vehicleId;
             }
             else

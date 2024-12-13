@@ -11,6 +11,6 @@
 
     public class ActionResponseSession: ActionResponse
     {
-        public int KeySession { get; set; } = 0;
+        public string KeySession { get; set; } = string.Empty;
     }
 }
