@@ -44,6 +44,54 @@ CREATE TABLE [dbo].[SystemUsers](
 END
 GO
 
+-- Countries Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Countries]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Countries](
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [Name] [nvarchar](100) NOT NULL,
+    [Iso3] [nchar](3) NULL,
+    [Iso2] [nchar](2) NULL,
+    [PhoneCode] [nvarchar](50) NULL,
+    [Currency] [nvarchar](50) NULL,
+    [Region] [nvarchar](100) NULL,
+    [Subregion] [nvarchar](100) NULL,
+    CONSTRAINT [PK_Countries] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+END
+GO
+
+-- States Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[States]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[States](
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [Name] [nvarchar](255) NOT NULL,
+    [CountryId] [int] NOT NULL,
+    [CountryCode] [nchar](2) NOT NULL,
+    CONSTRAINT [PK_States] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_States_Countries] FOREIGN KEY ([CountryId]) REFERENCES [dbo].[Countries] ([Id])
+)
+END
+GO
+
+-- Cities Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Cities]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Cities](
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [Name] [nvarchar](255) NOT NULL,
+    [StateId] [int] NOT NULL,
+    [CountryId] [int] NOT NULL,
+    [Latitude] [decimal](10, 8) NULL,
+    [Longitude] [decimal](11, 8) NULL,
+    CONSTRAINT [PK_Cities] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Cities_States] FOREIGN KEY ([StateId]) REFERENCES [dbo].[States] ([Id]),
+    CONSTRAINT [FK_Cities_Countries] FOREIGN KEY ([CountryId]) REFERENCES [dbo].[Countries] ([Id])
+)
+END
+GO
+
 -- ParkingLots Table (Plazas/Sedes)
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ParkingLots]') AND type in (N'U'))
 BEGIN
@@ -55,9 +103,15 @@ CREATE TABLE [dbo].[ParkingLots](
     [Longitude] [float] NOT NULL,
     [Address] [nvarchar](255) NULL,
     [OpeningHours] [nvarchar](100) NULL, -- e.g. "08:00 - 22:00"
+    [CountryId] [int] NULL,
+    [StateId] [int] NULL,
+    [CityId] [int] NULL,
     [IsActive] [bit] DEFAULT 1,
     CONSTRAINT [PK_ParkingLots] PRIMARY KEY CLUSTERED ([ParkingLotId] ASC),
-    CONSTRAINT [FK_ParkingLots_Tenants] FOREIGN KEY ([TenantId]) REFERENCES [dbo].[Tenants] ([TenantId])
+    CONSTRAINT [FK_ParkingLots_Tenants] FOREIGN KEY ([TenantId]) REFERENCES [dbo].[Tenants] ([TenantId]),
+    CONSTRAINT [FK_ParkingLots_Countries] FOREIGN KEY ([CountryId]) REFERENCES [dbo].[Countries] ([Id]),
+    CONSTRAINT [FK_ParkingLots_States] FOREIGN KEY ([StateId]) REFERENCES [dbo].[States] ([Id]),
+    CONSTRAINT [FK_ParkingLots_Cities] FOREIGN KEY ([CityId]) REFERENCES [dbo].[Cities] ([Id])
 )
 END
 GO

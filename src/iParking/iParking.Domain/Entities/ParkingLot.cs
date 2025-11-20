@@ -9,6 +9,9 @@ namespace iParking.Domain.Entities
         public double Longitude { get; set; }
         public string Address { get; set; }
         public string OpeningHours { get; set; }
+        public int? CountryId { get; set; }
+        public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public bool IsActive { get; set; }
     }
 }
