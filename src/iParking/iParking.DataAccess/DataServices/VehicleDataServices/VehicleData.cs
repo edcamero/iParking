@@ -31,7 +31,7 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
                         placa.IdPlaca = Convert.ToDecimal(reader["ID_PLACA"]);
                         placa.Placa = reader["PLACA"].ToString() ?? string.Empty;
                         placa.PlacaDefault = reader["PLACA_DEFAULT"] == DBNull.Value ? null : (decimal?)reader["PLACA_DEFAULT"];
-                        placa.IdUsuario = reader["ID_USUARIO"] == DBNull.Value ? null : (decimal?)reader["ID_USUARIO"];
+                        placa.VehicleOwnerId = reader["ID_USUARIO"] == DBNull.Value ? null : (decimal?)reader["ID_USUARIO"];
                         placa.FechaHoraCreado = reader["FECHA_HORA_CREADO"].ToString() ?? string.Empty;
                         placa.Estado = reader["ESTADO"] == DBNull.Value ? null : (decimal?)reader["ESTADO"];
 
@@ -60,7 +60,7 @@ namespace iParking.DataAccess.DataServices.VehicleDataServices
                     placa.IdPlaca = Convert.ToDecimal(reader["ID_PLACA"]);
                     placa.Placa = reader["PLACA"].ToString() ?? string.Empty;
                     placa.PlacaDefault = reader["PLACA_DEFAULT"] == DBNull.Value ? null : (decimal?)reader["PLACA_DEFAULT"];
-                    placa.IdUsuario = reader["ID_USUARIO"] == DBNull.Value ? null : (decimal?)reader["ID_USUARIO"];
+                    placa.VehicleOwnerId = reader["ID_USUARIO"] == DBNull.Value ? null : (decimal?)reader["ID_USUARIO"];
                     placa.FechaHoraCreado = reader["FECHA_HORA_CREADO"].ToString() ?? string.Empty;
                     placa.Estado = reader["ESTADO"] == DBNull.Value ? null : (decimal?)reader["ESTADO"];
                 }
