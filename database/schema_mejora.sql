@@ -44,6 +44,24 @@ CREATE TABLE [dbo].[SystemUsers](
 END
 GO
 
+-- ParkingLots Table (Plazas/Sedes)
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ParkingLots]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[ParkingLots](
+    [ParkingLotId] [int] IDENTITY(1,1) NOT NULL,
+    [TenantId] [int] NOT NULL,
+    [Name] [nvarchar](100) NOT NULL,
+    [Latitude] [float] NOT NULL,
+    [Longitude] [float] NOT NULL,
+    [Address] [nvarchar](255) NULL,
+    [OpeningHours] [nvarchar](100) NULL, -- e.g. "08:00 - 22:00"
+    [IsActive] [bit] DEFAULT 1,
+    CONSTRAINT [PK_ParkingLots] PRIMARY KEY CLUSTERED ([ParkingLotId] ASC),
+    CONSTRAINT [FK_ParkingLots_Tenants] FOREIGN KEY ([TenantId]) REFERENCES [dbo].[Tenants] ([TenantId])
+)
+END
+GO
+
 -- VehicleTypes Table
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[VehicleTypes]') AND type in (N'U'))
 BEGIN

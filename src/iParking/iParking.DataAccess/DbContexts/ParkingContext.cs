@@ -9,9 +9,12 @@ public partial class ParkingContext : DbContext
     {
     }
 
-    public ParkingContext(DbContextOptions<ParkingContext> options)
+    private readonly iParking.Application.Services.Tenant.ITenantService _tenantService;
+
+    public ParkingContext(DbContextOptions<ParkingContext> options, iParking.Application.Services.Tenant.ITenantService tenantService)
         : base(options)
     {
+        _tenantService = tenantService;
     }
 
     public virtual DbSet<Parking> Parkings { get; set; }
@@ -21,6 +24,14 @@ public partial class ParkingContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var tenantId = _tenantService?.GetTenantId();
+
+        // Apply filter to Vehicle (which has TenantId)
+        modelBuilder.Entity<Vehicle>().HasQueryFilter(v => !v.TenantId.HasValue || v.TenantId == tenantId);
+        
+        // Note: Parking entity does not have TenantId in the original schema, but if it should:
+        // modelBuilder.Entity<Parking>().HasQueryFilter(p => p.TenantId == tenantId);
+
         modelBuilder.Entity<Parking>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Parking__3213E83F389FD563");
