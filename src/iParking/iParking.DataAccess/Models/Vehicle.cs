@@ -19,4 +19,6 @@ public partial class Vehicle
     public int ParkingId { get; set; }
 
     public virtual Parking ParkingNavigation { get; set; } = null!;
+
+    public int? TenantId { get; set; }
 }

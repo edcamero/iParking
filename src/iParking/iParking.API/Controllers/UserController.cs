@@ -1,5 +1,5 @@
 ﻿using iParking.Application.Services.User;
-using iParking.Domain.Entities.Usuario;
+using iParking.Domain.Entities.VehicleOwner;
 using Microsoft.AspNetCore.Mvc;
 
 namespace iParking.API.Controllers
@@ -18,7 +18,7 @@ namespace iParking.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromForm] UsuarioNuevo newuser)
+        public async Task<IActionResult> CreateUser([FromForm] NewVehicleOwner newuser)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace iParking.API.Controllers
                             keySession = responseUser.KeySession,
                             id = responseUser.Id,
                             rut = newuser.Rut,
-                            digVer = newuser.DigVer,
+                            digVer = newuser.Dv,
                             mail = newuser.Mail,
                             nombres = newuser.Nombres,
                             apellidos = newuser.Apellidos,

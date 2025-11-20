@@ -1,6 +1,6 @@
 ﻿using iParking.DataAccess.DataServices;
 using iParking.Domain.Entities;
-using iParking.Domain.Entities.Usuario;
+using iParking.Domain.Entities.VehicleOwner;
 
 namespace iParking.Application.Services.User
 {
@@ -13,9 +13,9 @@ namespace iParking.Application.Services.User
             _userDataServices = userDataServices ?? throw new ArgumentNullException(nameof(userDataServices));
         }
 
-        public async Task<ActionResponseSession> CreatedUser(UsuarioNuevo nuevoUsuario)
+        public async Task<ActionResponseSession> CreatedUser(NewVehicleOwner nuevoUsuario)
         {
-            var user = await _userDataServices.GetUserAsync(nuevoUsuario.Rut, nuevoUsuario.DigVer);
+            var user = await _userDataServices.GetUserAsync(nuevoUsuario.Rut, nuevoUsuario.Dv);
 
             var response = new ActionResponseSession();
 
@@ -27,7 +27,7 @@ namespace iParking.Application.Services.User
                 return response;
             }
 
-            if(user != null && user.Dv.Equals(nuevoUsuario.DigVer) && user!.Rut.Equals(nuevoUsuario.Rut) && user.ClaveAcceso.Equals(nuevoUsuario.ClaveAcceso))
+            if(user != null && user.Dv.Equals(nuevoUsuario.Dv) && user!.Rut.Equals(nuevoUsuario.Rut) && user.ClaveAcceso.Equals(nuevoUsuario.ClaveAcceso))
             {
                 response.Status = true;
                 response.Code = 201;

@@ -1,4 +1,4 @@
-﻿using iParking.Domain.Entities.Usuario;
+﻿using iParking.Domain.Entities.VehicleOwner;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -13,7 +13,7 @@ namespace iParking.DataAccess.DataServices
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<Usuario?> GetUserAsync(string rut, string dv)
+        public async Task<VehicleOwner?> GetUserAsync(string rut, string dv)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
@@ -24,7 +24,7 @@ namespace iParking.DataAccess.DataServices
             {
                 if (reader.Read())
                 {
-                    Usuario usuario = new Usuario
+                    VehicleOwner usuario = new VehicleOwner
                     {
                         IdUsuario = Convert.ToInt32(reader["ID_USUARIO"]),
                         Rut = rut,
@@ -57,14 +57,14 @@ namespace iParking.DataAccess.DataServices
             return count > 0;
         }
 
-        public async Task<int> CreatedUser(UsuarioNuevo nuevoUsuario)
+        public async Task<int> CreatedUser(NewVehicleOwner nuevoUsuario)
         {
             using var connection = await _connectionFactory.GetConnectionAsync();
 
             using var command = new SqlCommand("sp_ingUsuario", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@rut", nuevoUsuario.Rut);
-            command.Parameters.AddWithValue("@dv", nuevoUsuario.DigVer);
+            command.Parameters.AddWithValue("@dv", nuevoUsuario.Dv);
             command.Parameters.AddWithValue("@nombres", nuevoUsuario.Nombres);
             command.Parameters.AddWithValue("@apellidos", nuevoUsuario.Apellidos);
             command.Parameters.AddWithValue("@telefono", nuevoUsuario.Telefono);

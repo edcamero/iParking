@@ -1,6 +1,6 @@
-﻿namespace iParking.Domain.Entities.Usuario
+﻿namespace iParking.Domain.Entities.VehicleOwner
 {
-    public class Usuario
+    public class VehicleOwner
     {
         public int IdUsuario { get; set; }
         public string Rut { get; set; }
@@ -11,6 +11,7 @@
         public string ClaveAcceso { get; set; }
         public string Mail { get; set; }
         public int Estado { get; set; }
+        public int? TenantId { get; set; }
     }
 
 }

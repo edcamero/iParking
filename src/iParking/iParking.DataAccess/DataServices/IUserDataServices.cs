@@ -1,11 +1,11 @@
-﻿using iParking.Domain.Entities.Usuario;
+﻿using iParking.Domain.Entities.VehicleOwner;
 
 namespace iParking.DataAccess.DataServices
 {
     public interface IUserDataServices
     {
         Task<bool> CheckIfUserExists(string rut, string dv);
-        Task<Usuario?> GetUserAsync(string? rut, string? dv);
-        Task<int> CreatedUser(UsuarioNuevo nuevoUsuario);
+        Task<VehicleOwner?> GetUserAsync(string? rut, string? dv);
+        Task<int> CreatedUser(NewVehicleOwner nuevoUsuario);
     }
 }
