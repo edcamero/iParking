@@ -1,4 +1,4 @@
-namespace iParking.Application.Services.Tenant
+namespace iParking.Domain.Services
 {
     public interface ITenantService
     {

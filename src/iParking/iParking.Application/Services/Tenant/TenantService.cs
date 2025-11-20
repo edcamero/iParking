@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using iParking.Domain.Services;
 
 namespace iParking.Application.Services.Tenant
 {

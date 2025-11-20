@@ -9,9 +9,9 @@ public partial class ParkingContext : DbContext
     {
     }
 
-    private readonly iParking.Application.Services.Tenant.ITenantService _tenantService;
+    private readonly iParking.Domain.Services.ITenantService _tenantService;
 
-    public ParkingContext(DbContextOptions<ParkingContext> options, iParking.Application.Services.Tenant.ITenantService tenantService)
+    public ParkingContext(DbContextOptions<ParkingContext> options, iParking.Domain.Services.ITenantService tenantService)
         : base(options)
     {
         _tenantService = tenantService;
