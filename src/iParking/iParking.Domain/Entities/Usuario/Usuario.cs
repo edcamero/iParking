@@ -1,21 +1,20 @@
 ﻿using System;
 using iParking.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace iParking.Domain.Entities.Usuario
 {
     /// <summary>
     /// Entidad principal de usuario que soporta el modelo multi-empresa y roles.
-    /// Unifica la estructura anterior con nuevos campos para SaaS.
+    /// Hereda de IdentityUser<int> para integrar con ASP.NET Core Identity.
     /// </summary>
-    public class User : BaseEntity
+    public class User : IdentityUser<int>
     {
         public string Rut { get; set; } = string.Empty;
         public string Dv { get; set; } = string.Empty;
         public string Nombres { get; set; } = string.Empty;
         public string Apellidos { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
-        public string ClaveAcceso { get; set; } = string.Empty;
-        public string Mail { get; set; } = string.Empty;
         public int Estado { get; set; } = 1;
         
         // Nuevos campos para modelo SaaS
