@@ -9,13 +9,23 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace iParking.Application
 {
+    /// <summary>
+    /// Configuración de inyección de dependencias para la capa de aplicación.
+    /// Sigue el principio de Inversión de Dependencias (SOLID-D).
+    /// </summary>
     public static class AplicationServicesRegister
     {
+        /// <summary>
+        /// Registra todos los servicios de aplicación en el contenedor DI.
+        /// </summary>
         public static void AddiParkingAplicationServices(this IServiceCollection services)
         {
+            // Servicios de infraestructura
             services.AddSingleton<IServicesConfigurationService, ServicesConfigurationService>();
             services.AddSingleton<ISecurityHash, SecurityHash>();
-            services.AddScoped<IPayExtenalService, PayExtenalService>();
+            
+            // Servicios de negocio (Scoped = por request HTTP)
+            services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();
             services.AddScoped<IParkingServices, ParkingServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IAuthServices, AuthServices>();
