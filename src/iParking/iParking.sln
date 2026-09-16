@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iParking.API", "iParking.AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iParking.Infrastructure", "iParking.Infrastructure\iParking.Infrastructure.csproj", "{C3A8D6DC-947F-4500-B326-CB491F73D26F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iParking.Web", "iParking.Web\iParking.Web.csproj", "{31054BA0-32F6-46A1-9ABF-9AB671BFF948}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{C3A8D6DC-947F-4500-B326-CB491F73D26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3A8D6DC-947F-4500-B326-CB491F73D26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3A8D6DC-947F-4500-B326-CB491F73D26F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31054BA0-32F6-46A1-9ABF-9AB671BFF948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31054BA0-32F6-46A1-9ABF-9AB671BFF948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31054BA0-32F6-46A1-9ABF-9AB671BFF948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31054BA0-32F6-46A1-9ABF-9AB671BFF948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,126 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">iParking - Sistema de Parqueaderos</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Inicio
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="login">
+                <span class="bi bi-box-arrow-in-right" aria-hidden="true"></span> Iniciar Sesión
+            </NavLink>
+        </div>
+
+        @if (isLoggedIn)
+        {
+            <div class="nav-item px-3">
+                <span class="nav-link text-white">
+                    <span class="bi bi-person-circle" aria-hidden="true"></span> @userName (@userRole)
+                </span>
+            </div>
+
+            @if (userRole == "Administrador")
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin/dashboard">
+                        <span class="bi bi-speedometer2" aria-hidden="true"></span> Dashboard Admin
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin/usuarios">
+                        <span class="bi bi-people-fill" aria-hidden="true"></span> Usuarios
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin/parqueaderos">
+                        <span class="bi bi-building" aria-hidden="true"></span> Parqueaderos
+                    </NavLink>
+                </div>
+            }
+            else if (userRole == "Empleado")
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="empleado/registro">
+                        <span class="bi bi-car-front-fill" aria-hidden="true"></span> Registro Vehículos
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="empleado/historial">
+                        <span class="bi bi-clock-history" aria-hidden="true"></span> Historial
+                    </NavLink>
+                </div>
+            }
+            else if (userRole == "Usuario")
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="usuario/reservas">
+                        <span class="bi bi-calendar-check" aria-hidden="true"></span> Reservas
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="usuario/mis-parqueos">
+                        <span class="bi bi-p-square" aria-hidden="true"></span> Mis Parqueos
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="usuario/pagos">
+                        <span class="bi bi-credit-card" aria-hidden="true"></span> Pagos
+                    </NavLink>
+                </div>
+            }
+
+            <div class="nav-item px-3">
+                <button class="btn btn-link nav-link" @onclick="Logout">
+                    <span class="bi bi-box-arrow-left" aria-hidden="true"></span> Cerrar Sesión
+                </button>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    private bool isLoggedIn = false;
+    private string userName = "";
+    private string userRole = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Implementar autenticación real con JWT
+        var userInfo = await localStorage.GetItemAsync<UserInfo>("userInfo");
+        if (userInfo != null)
+        {
+            isLoggedIn = true;
+            userName = userInfo.Name;
+            userRole = userInfo.Role;
+        }
+    }
+
+    private async Task Logout()
+    {
+        await localStorage.RemoveItemAsync("userInfo");
+        isLoggedIn = false;
+        userName = "";
+        userRole = "";
+        NavigationManager.NavigateTo("/");
+    }
+
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private ILocalStorageService localStorage { get; set; } = default!;
+
+    public class UserInfo
+    {
+        public string Name { get; set; } = "";
+        public string Role { get; set; } = "";
+        public string Token { get; set; } = "";
+    }
+}
+
