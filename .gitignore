@@ -1,44 +1,41 @@
 ```
 # Build artifacts
-bin/
 obj/
+bin/
 *.dll
 *.exe
 *.pdb
 *.config
-*.csproj.user
+*.manifest
+*.lockb
+*.db
+*.log
 
 # Dependencies
 packages/
 node_modules/
+lib/
 
-# Logs
-*.log
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
+# User-specific files
+.vs/
 .vscode/
-.idea/
-*.suo
 *.user
 *.userosscache
-*.sln.docstates
+*.suo
+*.csproj.user
+*.userprefs
+
+# Environment specific
+.env
+.env.local
+.env.*
+!.env.example
 
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Test and coverage
-coverage/
-*.coverage
-htmlcov/
-.testresults
-
-# Temporary files
-*.tmp
-*~
+desktop.ini
+$RECYCLE.BIN/
+ehthumbs.db
+Icon?
 ```
