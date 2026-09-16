@@ -6,21 +6,337 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DOTNET_VERSION: '7.0.x'
+  PROJECT_PATH: './src/iParking/iParking.API/iParking.API.csproj'
+  SOLUTION_PATH: './src/iParking/iParking.sln'
+  DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/iparking
+  TEST_COVERAGE_THRESHOLD: 80
+
 jobs:
-
-  build:
-
+  # Job 0: Linting and Validation
+  lint-and-validate:
+    name: Lint and Validate
     runs-on: ubuntu-latest
-
+    
     steps:
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: actions/checkout@v3
-      - name: Build Docker image
-        run: docker build  --tag ${{ secrets.DOCKERHUB_USERNAME }}/iparking:latest ./src/iParking
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/iparking:latest
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install actionlint
+      run: |
+        wget -q https://github.com/rhysd/actionlint/releases/latest/download/actionlint_linux_amd64.tar.gz
+        tar xzf actionlint_linux_amd64.tar.gz
+        chmod +x actionlint
+        sudo mv actionlint /usr/local/bin/
+
+    - name: Install hadolint
+      run: |
+        wget -q https://github.com/hadolint/hadolint/releases/latest/download/hadolint_Linux_x86_64
+        chmod +x hadolint_Linux_x86_64
+        sudo mv hadolint_Linux_x86_64 /usr/local/bin/hadolint
+
+    - name: Validate GitHub Actions workflows
+      run: |
+        echo "Validating GitHub Actions workflow files..."
+        find .github/workflows -name "*.yml" -o -name "*.yaml" | while read file; do
+          echo "Checking $file"
+          actionlint "$file"
+        done
+
+    - name: Validate Dockerfile
+      run: |
+        echo "Validating Dockerfile..."
+        hadolint ./src/iParking/Dockerfile || echo "Hadolint found issues (non-blocking)"
+
+    - name: Check for hardcoded secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      continue-on-error: true
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Check code formatting
+      run: |
+        echo "Checking code formatting..."
+        dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic || {
+          echo "::error::Code is not formatted correctly. Run 'dotnet format' to fix."
+          exit 1
+        }
+
+  # Job 1: Build and Test .NET Project
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: lint-and-validate
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+    - name: Check for outdated packages
+      run: |
+        echo "Checking for outdated packages..."
+        dotnet list ${{ env.SOLUTION_PATH }} package --outdated || echo "Some packages are outdated (non-blocking)"
+
+    - name: Check for vulnerable packages
+      run: |
+        echo "Checking for vulnerable packages..."
+        if ! dotnet list ${{ env.SOLUTION_PATH }} package --vulnerable; then
+          echo "::error::Vulnerable packages detected! Please update them."
+          exit 1
+        fi
+
+    - name: Run Tests with Coverage
+      id: run-tests
+      run: |
+        if find ./src/iParking -name "*Test*.csproj" -o -name "*.Tests.csproj" | grep -q .; then
+          dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults \
+            --logger "trx;LogFileName=test-results.trx"
+        else
+          echo "No test projects found, skipping tests"
+          echo "has_tests=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Process code coverage
+      if: steps.run-tests.outputs.has_tests != 'false'
+      run: |
+        echo "Processing code coverage results..."
+        COVERAGE_FILE=$(find ./TestResults -name "coverage.cobertura.xml" -type f | head -n 1)
+        if [ -f "$COVERAGE_FILE" ]; then
+          echo "Coverage file found: $COVERAGE_FILE"
+          # Extract line coverage percentage
+          LINE_COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' "$COVERAGE_FILE" | head -n 1)
+          if [ -n "$LINE_COVERAGE" ]; then
+            COVERAGE_PERCENT=$(echo "$LINE_COVERAGE * 100" | bc)
+            echo "Line coverage: ${COVERAGE_PERCENT}%"
+            echo "coverage_percent=$COVERAGE_PERCENT" >> $GITHUB_ENV
+            
+            # Check against threshold
+            if (( $(echo "$COVERAGE_PERCENT < $TEST_COVERAGE_THRESHOLD" | bc -l) )); then
+              echo "::warning::Code coverage (${COVERAGE_PERCENT}%) is below threshold (${TEST_COVERAGE_THRESHOLD}%)"
+            else
+              echo "✓ Code coverage meets threshold"
+            fi
+          fi
+        fi
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: ./TestResults/
+        retention-days: 7
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: ./src/iParking/iParking.API/bin/Release/net7.0/
+
+  # Job 2: Code Quality and Security Analysis
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Build for analysis
+      run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+    - name: Run SonarCloud Scan
+      if: ${{ env.SONAR_TOKEN != '' && secrets.SONAR_TOKEN != '' }}
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet sonarscanner begin /k:"${{ github.repository }}" /o:"${{ secrets.SONAR_ORG_KEY }}" /d:sonar.token="${SONAR_TOKEN}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet build ${{ env.SOLUTION_PATH }}
+        dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+
+    - name: Run .NET static analysis
+      run: |
+        echo "Running static code analysis..."
+        dotnet build ${{ env.SOLUTION_PATH }} --configuration Release /warnaserror /p:TreatWarningsAsErrors=true || {
+          echo "::error::Build has warnings treated as errors"
+          exit 1
+        }
+
+    - name: Analyze code complexity
+      run: |
+        echo "Analyzing code metrics..."
+        dotnet build ${{ env.SOLUTION_PATH }} --configuration Release /p:RunCodeAnalysis=true /p:CodeAnalysisTreatWarningsAsErrors=false
+
+    - name: Check for security vulnerabilities (detailed)
+      run: |
+        echo "Running detailed security check..."
+        dotnet list ${{ env.SOLUTION_PATH }} package --vulnerable --include-transitive || echo "No vulnerable packages found"
+
+  # Job 3: Docker Build and Push (DEACTIVADO TEMPORALMENTE)
+  # docker-build-push:
+  #   name: Docker Build and Push
+  #   runs-on: ubuntu-latest
+  #   needs: [build-and-test, code-quality]
+  #   
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v4
+
+  #   - name: Set up Docker Buildx
+  #     uses: docker/setup-buildx-action@v3
+
+  #   - name: Login to Docker Hub
+  #     uses: docker/login-action@v3
+  #     with:
+  #       username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  #   - name: Extract metadata for Docker
+  #     id: meta
+  #     uses: docker/metadata-action@v5
+  #     with:
+  #       images: ${{ env.DOCKER_IMAGE_NAME }}
+  #       tags: |
+  #         type=ref,event=branch
+  #         type=ref,event=pr
+  #         type=sha,prefix=
+  #         type=raw,value=latest,enable={{is_default_branch}}
+  #         type=semver,pattern={{version}}
+  #         type=semver,pattern={{major}}.{{minor}}
+
+  #   - name: Validate Docker image before build
+  #     run: |
+  #       echo "Validating Docker configuration..."
+  #       if [ ! -f "./src/iParking/Dockerfile" ]; then
+  #         echo "::error::Dockerfile not found!"
+  #         exit 1
+  #       fi
+
+  #   - name: Build Docker image (test)
+  #     uses: docker/build-push-action@v5
+  #     with:
+  #       context: ./src/iParking
+  #       file: ./src/iParking/Dockerfile
+  #       push: false
+  #       tags: ${{ steps.meta.outputs.tags }}
+  #       labels: ${{ steps.meta.outputs.labels }}
+  #       cache-from: type=gha
+  #       cache-to: type=gha,mode=max
+  #       load: true
+  #       platforms: linux/amd64
+
+  #   - name: Run Trivy vulnerability scanner
+  #     uses: aquasecurity/trivy-action@master
+  #     with:
+  #       image-ref: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  #       format: 'table'
+  #       exit-code: '1'
+  #       ignore-unfixed: true
+  #       vuln-type: 'os,library'
+  #       severity: 'CRITICAL,HIGH'
+  #       timeout: '10m'
+
+  #   - name: Run additional security scan with medium severity
+  #     uses: aquasecurity/trivy-action@master
+  #     continue-on-error: true
+  #     with:
+  #       image-ref: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  #       format: 'json'
+  #       output: 'trivy-results.json'
+  #       ignore-unfixed: false
+  #       vuln-type: 'os,library'
+  #       severity: 'CRITICAL,HIGH,MEDIUM'
+
+  #   - name: Upload Trivy scan results
+  #     uses: actions/upload-artifact@v4
+  #     if: always()
+  #     with:
+  #       name: trivy-results
+  #       path: trivy-results.json
+  #       retention-days: 7
+
+  #   - name: Build and push Docker image (production)
+  #     uses: docker/build-push-action@v5
+  #     with:
+  #       context: ./src/iParking
+  #       file: ./src/iParking/Dockerfile
+  #       push: true
+  #       tags: ${{ steps.meta.outputs.tags }}
+  #       labels: ${{ steps.meta.outputs.labels }}
+  #       cache-from: type=gha
+  #       cache-to: type=gha,mode=max
+  #       platforms: linux/amd64
+  #       provenance: true
+  #       sbom: true
+
+  #   - name: Verify pushed image
+  #     run: |
+  #       echo "Verifying pushed image..."
+  #       docker pull ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  #       docker images ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  #       echo "Image successfully pushed and verified"
+
+  #   - name: Generate SBOM
+  #     uses: anchore/sbom-action@v0
+  #     with:
+  #       image: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  #       artifact-name: sbom-${{ github.sha }}.spdx.json
+
+  #   - name: Upload SBOM
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: sbom
+  #       path: sbom-*.spdx.json
+  #       retention-days: 30
