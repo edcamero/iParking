@@ -197,14 +197,15 @@ jobs:
 
     - name: Run SonarCloud Scan
       if: ${{ env.SONAR_TOKEN != '' && secrets.SONAR_TOKEN != '' }}
+      uses: sonarsource/sonarcloud-github-action@master
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        dotnet tool install --global dotnet-sonarscanner
-        dotnet sonarscanner begin /k:"${{ github.repository }}" /o:"${{ secrets.SONAR_ORG_KEY }}" /d:sonar.token="${SONAR_TOKEN}" /d:sonar.host.url="https://sonarcloud.io"
-        dotnet build ${{ env.SOLUTION_PATH }}
-        dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          /k:"${{ github.repository }}"
+          /o:"${{ secrets.SONAR_ORG_KEY }}"
+          /d:sonar.host.url="https://sonarcloud.io"
 
     - name: Run .NET static analysis
       run: |

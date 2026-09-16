@@ -7,7 +7,7 @@
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
 # Editors
 .vscode/
@@ -15,8 +15,8 @@
 
 # Dependencies
 node_modules/
-.venv/
 venv/
+.venv/
 __pycache__/
 .mypy_cache/
 .pytest_cache/
@@ -24,10 +24,6 @@ dist/
 build/
 target/
 .gradle/
-
-# OS generated files
-.DS_Store
-Thumbs.db
 
 # Compiled files
 *.pyc
@@ -39,6 +35,10 @@ Thumbs.db
 *.a
 *.obj
 *.out
+
+# System files
+.DS_Store
+Thumbs.db
 
 # Coverage
 coverage/
@@ -64,4 +64,8 @@ htmlcov/
 *.Z
 *.lz
 *.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 ```
