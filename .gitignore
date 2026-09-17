@@ -7,63 +7,29 @@ obj/
 *.pdb
 *.so
 *.dylib
-*.nupkg
+*.jar
+*.war
+*.class
 
 # Dependencies
 packages/
 node_modules/
 vendor/
 
-# IDE files
-.vs/
-.idea/
-*.userprefs
-*.suo
-*.user
-*.aps
-*.ncb
-*.opendb
-*.VC.db
-*.VC.VC.opendb
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
+# Test coverage
+coverage/
+*.coverage
+*.cover
+coverage.xml
+coverage-final.json
 
 # Logs
 *.log
+logs/
 
-# Environment specific files
+# Environment specific
 .env
 .env.local
 .env.*
-!env.example
-
-# User-specific files
-*.userprefs
-*.sln.docstates
-
-# Testing
-coverage/
-*.gcov
-*.lcov
-*.profdata
-
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.backup
-
-# Output files
-output/
-dist/
-build/
-target/
+!src/iParking/iParking.Application.Tests/**
 ```
