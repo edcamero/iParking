@@ -1,35 +1,37 @@
 ```
 # Build artifacts
-bin/
-obj/
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
 *.dll
 *.exe
 *.pdb
-*.so
-*.dylib
-*.jar
-*.war
-*.class
+*.userprefs
 
 # Dependencies
 packages/
 node_modules/
-vendor/
-
-# Test coverage
-coverage/
-*.coverage
-*.cover
-coverage.xml
-coverage-final.json
 
 # Logs
 *.log
-logs/
 
-# Environment specific
+# Environment
 .env
 .env.local
-.env.*
-!src/iParking/iParking.Application.Tests/**
+*.env.*
+
+# Editors
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
 ```
