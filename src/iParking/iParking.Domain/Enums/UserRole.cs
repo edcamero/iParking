@@ -41,7 +41,8 @@ namespace iParking.Domain.Enums
         Fractional = 1,   // Por minuto/hora
         Daily = 2,        // Día completo
         Overnight = 3,    // Pernocta
-        Subscription = 4  // Mensualidad
+        Subscription = 4, // Mensualidad
+        TimeFrame = 5     // Franja horaria fija (ej: Plan Nocturno, Plan Oficina)
     }
 
     /// <summary>
@@ -67,5 +68,25 @@ namespace iParking.Domain.Enums
         Active = 1,
         Completed = 2,
         Cancelled = 3
+    }
+
+    /// <summary>
+    /// Tipo de excedente de franja horaria.
+    /// </summary>
+    public enum ExcessType
+    {
+        EarlyEntry = 1,   // Ingreso anticipado
+        LateExit = 2      // Salida tardía
+    }
+
+    /// <summary>
+    /// Estado del cobro de excedente.
+    /// </summary>
+    public enum ExcessPaymentStatus
+    {
+        Pending = 1,      // Pendiente de cobro
+        Paid = 2,         // Pagado exitosamente
+        Failed = 3,       // Cobro fallido
+        Deferred = 4      // Diferido a facturación posterior
     }
 }

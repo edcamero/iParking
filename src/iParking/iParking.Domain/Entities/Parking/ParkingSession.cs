@@ -24,11 +24,18 @@ namespace iParking.Domain.Entities.Parking
         public DateTime? PaymentDate { get; set; }
         public bool IsPaid { get; set; }
         public string TicketCode { get; set; } = string.Empty; // Código QR/Barras
-
+        
+        // Datos de suscripción/franja horaria
+        public int? SubscriptionId { get; set; } // Si aplica, la suscripción asociada
+        public bool HasExcess { get; set; } = false; // Indica si hay excedentes de franja
+        public decimal? ExcessAmount { get; set; } // Monto total de excedentes
+        
         // Navegación
         public virtual ParkingLot ParkingLot { get; set; } = null!;
         public virtual ParkingSpot? ParkingSpot { get; set; }
         public virtual User? OperatorUser { get; set; }
         public virtual ParkingRate? Rate { get; set; }
+        public virtual Subscription.Subscription? Subscription { get; set; }
+        public virtual ICollection<ParkingSessionExcess> ExcessRecords { get; set; } = new List<ParkingSessionExcess>();
     }
 }

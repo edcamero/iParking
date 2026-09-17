@@ -1,37 +1,89 @@
 ```
-# Build artifacts
-**/bin/
-**/obj/
-**/Debug/
-**/Release/
-*.dll
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
 *.exe
-*.pdb
-*.userprefs
+*.dll
+*.so
+*.a
+*.out
+obj/
 
 # Dependencies
-packages/
+.venv/
+venv/
 node_modules/
+packages/
+lib/
+julia-*/
+zig*/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+.nyc_output/
+coverage/
 
-# Logs
+# Logs and temp files
 *.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.~
+*~
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
+!.env.example
 
 # Editors
-.vs/
 .vscode/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
-
-# OS generated files
+.idea/
+*.sublime-project
+*.sublime-workspace
 .DS_Store
 Thumbs.db
-ehthumbs.db
-Icon?
+
+# Build outputs
+dist/
+build/
+out/
+release/
+debug/
+bin/
+obj/
+*.dll
+*.exe
+*.so
+*.dylib
+*.class
+
+# Compression
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 ```
