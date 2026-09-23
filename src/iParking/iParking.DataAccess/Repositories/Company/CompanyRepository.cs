@@ -2,6 +2,8 @@ using System.Data;
 using Dapper;
 using iParking.Domain.Entities.MultiTenant;
 using iParking.Domain.Shared;
+using iParking.DataAccess.Repositories.Base;
+using CompanyEntity = iParking.Domain.Entities.MultiTenant.Company;
 
 namespace iParking.DataAccess.Repositories.Company
 {
@@ -40,7 +42,7 @@ namespace iParking.DataAccess.Repositories.Company
             try
             {
                 var companies = await ExecuteQueryAsync<Company>(sql);
-                return Result<IEnumerable<Company>>.Success(companies);
+                return Result<IEnumerable<CompanyEntity>>.Success(companies);
             }
             catch (Exception ex)
             {
