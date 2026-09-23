@@ -2,6 +2,7 @@ using System.Data;
 using Dapper;
 using iParking.Domain.Entities.Parking;
 using iParking.Domain.Shared;
+using iParking.DataAccess.Repositories.Base;
 
 namespace iParking.DataAccess.Repositories.Parking
 {
@@ -22,11 +23,11 @@ namespace iParking.DataAccess.Repositories.Parking
                 var parkingLot = await ExecuteQueryFirstOrDefaultAsync<ParkingLot>(sql, new { Id = id });
                 return parkingLot != null 
                     ? Result<ParkingLot>.Success(parkingLot) 
-                    : Result<ParkingLot>.Error("Parqueadero no encontrado");
+                    : Result<ParkingLot>.Failure("Parqueadero no encontrado");
             }
             catch (Exception ex)
             {
-                return Result<ParkingLot>.Error($"Error al obtener parqueadero: {ex.Message}");
+                return Result<ParkingLot>.Failure($"Error al obtener parqueadero: {ex.Message}");
             }
         }
 
@@ -43,7 +44,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<IEnumerable<ParkingLot>>.Error($"Error al listar parqueaderos: {ex.Message}");
+                return Result<IEnumerable<ParkingLot>>.Failure($"Error al listar parqueaderos: {ex.Message}");
             }
         }
 
@@ -64,7 +65,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<ParkingLot>.Error($"Error al crear parqueadero: {ex.Message}");
+                return Result<ParkingLot>.Failure($"Error al crear parqueadero: {ex.Message}");
             }
         }
 
@@ -90,7 +91,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<bool>.Error($"Error al actualizar parqueadero: {ex.Message}");
+                return Result<bool>.Failure($"Error al actualizar parqueadero: {ex.Message}");
             }
         }
 
@@ -105,7 +106,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<bool>.Error($"Error al eliminar parqueadero: {ex.Message}");
+                return Result<bool>.Failure($"Error al eliminar parqueadero: {ex.Message}");
             }
         }
 
@@ -121,7 +122,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<int>.Error($"Error al contar puestos disponibles: {ex.Message}");
+                return Result<int>.Failure($"Error al contar puestos disponibles: {ex.Message}");
             }
         }
 
@@ -137,7 +138,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<int>.Error($"Error al contar puestos ocupados: {ex.Message}");
+                return Result<int>.Failure($"Error al contar puestos ocupados: {ex.Message}");
             }
         }
     }

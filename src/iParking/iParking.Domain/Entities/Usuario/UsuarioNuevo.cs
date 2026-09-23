@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace iParking.Domain.Entities.Usuario
 {
@@ -16,6 +16,16 @@ namespace iParking.Domain.Entities.Usuario
         [Required(ErrorMessage = "El dígito verificador es obligatorio")]
         [StringLength(1, MinimumLength = 1, ErrorMessage = "El dígito verificador debe ser un carácter")]
         public string Dv { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Alias de compatibilidad legacy para Dv.
+        /// </summary>
+        [Obsolete("Use Dv instead")]
+        public string DigVer
+        {
+            get => Dv;
+            set => Dv = value;
+        }
 
         [Required(ErrorMessage = "El email es obligatorio")]
         [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
@@ -38,6 +48,16 @@ namespace iParking.Domain.Entities.Usuario
         [MinLength(8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres")]
         [MaxLength(256, ErrorMessage = "La contraseña no puede exceder los 256 caracteres")]
         public string ClaveAcceso { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Alias de compatibilidad legacy para ClaveAcceso.
+        /// </summary>
+        [Obsolete("Use ClaveAcceso instead")]
+        public string Password
+        {
+            get => ClaveAcceso;
+            set => ClaveAcceso = value;
+        }
 
         [StringLength(100, ErrorMessage = "El IMEI no puede exceder los 100 caracteres")]
         public string? ImeiCelular { get; set; }

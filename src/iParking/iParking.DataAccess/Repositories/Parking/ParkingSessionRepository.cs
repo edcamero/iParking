@@ -3,6 +3,7 @@ using Dapper;
 using iParking.Domain.Entities.Parking;
 using iParking.Domain.Enums;
 using iParking.Domain.Shared;
+using iParking.DataAccess.Repositories.Base;
 
 namespace iParking.DataAccess.Repositories.Parking
 {
@@ -23,11 +24,11 @@ namespace iParking.DataAccess.Repositories.Parking
                 var session = await ExecuteQueryFirstOrDefaultAsync<ParkingSession>(sql, new { Id = id });
                 return session != null 
                     ? Result<ParkingSession>.Success(session) 
-                    : Result<ParkingSession>.Error("Sesión no encontrada");
+                    : Result<ParkingSession>.Failure("Sesión no encontrada");
             }
             catch (Exception ex)
             {
-                return Result<ParkingSession>.Error($"Error al obtener sesión: {ex.Message}");
+                return Result<ParkingSession>.Failure($"Error al obtener sesión: {ex.Message}");
             }
         }
 
@@ -43,11 +44,11 @@ namespace iParking.DataAccess.Repositories.Parking
                 var session = await ExecuteQueryFirstOrDefaultAsync<ParkingSession>(sql, new { LicensePlate = licensePlate, ParkingLotId = parkingLotId });
                 return session != null 
                     ? Result<ParkingSession>.Success(session) 
-                    : Result<ParkingSession>.Error("No hay sesión activa para este vehículo");
+                    : Result<ParkingSession>.Failure("No hay sesión activa para este vehículo");
             }
             catch (Exception ex)
             {
-                return Result<ParkingSession>.Error($"Error al buscar sesión activa: {ex.Message}");
+                return Result<ParkingSession>.Failure($"Error al buscar sesión activa: {ex.Message}");
             }
         }
 
@@ -71,7 +72,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<IEnumerable<ParkingSession>>.Error($"Error al listar sesiones: {ex.Message}");
+                return Result<IEnumerable<ParkingSession>>.Failure($"Error al listar sesiones: {ex.Message}");
             }
         }
 
@@ -93,7 +94,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<ParkingSession>.Error($"Error al registrar entrada: {ex.Message}");
+                return Result<ParkingSession>.Failure($"Error al registrar entrada: {ex.Message}");
             }
         }
 
@@ -123,7 +124,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<bool>.Error($"Error al registrar salida y cobro: {ex.Message}");
+                return Result<bool>.Failure($"Error al registrar salida y cobro: {ex.Message}");
             }
         }
 
@@ -139,7 +140,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<int>.Error($"Error al contar sesiones activas: {ex.Message}");
+                return Result<int>.Failure($"Error al contar sesiones activas: {ex.Message}");
             }
         }
 
@@ -157,7 +158,7 @@ namespace iParking.DataAccess.Repositories.Parking
             }
             catch (Exception ex)
             {
-                return Result<decimal>.Error($"Error al calcular ingresos: {ex.Message}");
+                return Result<decimal>.Failure($"Error al calcular ingresos: {ex.Message}");
             }
         }
     }

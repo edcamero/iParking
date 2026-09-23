@@ -1,4 +1,5 @@
 using MediatR;
+using iParking.Domain.Entities;
 using iParking.Domain.Entities.Usuario;
 
 namespace iParking.Application.Features.Users.Commands.CreateUser

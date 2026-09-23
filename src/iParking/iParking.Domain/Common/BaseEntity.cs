@@ -7,8 +7,26 @@ namespace iParking.Domain.Common
     public abstract class BaseEntity
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
         public bool IsActive { get; set; } = true;
+
+        /// <summary>
+        /// Alias de compatibilidad legacy para CreatedAt.
+        /// </summary>
+        public DateTime CreatedDate
+        {
+            get => CreatedAt;
+            set => CreatedAt = value;
+        }
+
+        /// <summary>
+        /// Alias de compatibilidad legacy para UpdatedAt.
+        /// </summary>
+        public DateTime? ModifiedDate
+        {
+            get => UpdatedAt;
+            set => UpdatedAt = value;
+        }
     }
 }

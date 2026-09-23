@@ -1,5 +1,6 @@
 using System;
 using iParking.Domain.Common;
+using iParking.Domain.Entities.MultiTenant;
 using iParking.Domain.Enums;
 
 namespace iParking.Domain.Entities.Parking
@@ -34,7 +35,7 @@ namespace iParking.Domain.Entities.Parking
         // Navegación
         public virtual ParkingLot ParkingLot { get; set; } = null!;
         public virtual ParkingSpot? ParkingSpot { get; set; }
-        public virtual User? OperatorUser { get; set; }
+        public virtual MultiTenant.User? OperatorUser { get; set; }
         public virtual ParkingRate? Rate { get; set; }
         public virtual Subscription.Subscription? Subscription { get; set; }
         public virtual ICollection<ParkingSessionExcess> ExcessRecords { get; set; } = new List<ParkingSessionExcess>();

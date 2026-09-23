@@ -1,5 +1,6 @@
 using MediatR;
 using iParking.DataAccess.DataServices;
+using iParking.Domain.Entities;
 using iParking.Domain.Entities.Usuario;
 using iParking.Infrastructure.Security;
 

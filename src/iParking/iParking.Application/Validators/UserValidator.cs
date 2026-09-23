@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using iParking.Domain.Entities.Usuario;
 
 namespace iParking.Application.Validators
 {

@@ -1,8 +1,9 @@
-﻿using iParking.Domain.Common;
+using iParking.Domain.Common;
 using iParking.Domain.Entities.MultiTenant;
 using iParking.Domain.Entities.Parking;
 using iParking.Domain.Entities.Subscription;
 using iParking.Domain.Entities.Usuario;
+using iParking.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
     public virtual DbSet<Company> Companies { get; set; }
 
     // Parking
+    public virtual DbSet<iParking.DataAccess.Models.Parking> Parkings { get; set; }
     public virtual DbSet<ParkingLot> ParkingLots { get; set; }
     public virtual DbSet<ParkingSpot> ParkingSpots { get; set; }
     public virtual DbSet<ParkingRate> ParkingRates { get; set; }
@@ -101,7 +103,7 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Identifier).HasMaxLength(20).IsUnicode(false).IsRequired();
             entity.Property(e => e.Sector).HasMaxLength(50).IsUnicode(false).IsRequired();
-            entity.Property(e => e.Status).HasDefaultValue(Enums.ParkingSpotStatus.Available);
+            entity.Property(e => e.Status).HasDefaultValue(ParkingSpotStatus.Available);
             entity.Property(e => e.IsDisabled).HasDefaultValue(false);
 
             entity.HasOne(d => d.ParkingLot)
@@ -132,7 +134,7 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
             entity.ToTable("ParkingSessions");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.LicensePlate).HasMaxLength(20).IsUnicode(false).IsRequired();
-            entity.Property(e => e.Status).HasDefaultValue(Enums.ParkingSessionStatus.Active);
+            entity.Property(e => e.Status).HasDefaultValue(ParkingSessionStatus.Active);
             entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
             entity.Property(e => e.TicketCode).HasMaxLength(50).IsUnicode(false).IsRequired();
             entity.Property(e => e.IsPaid).HasDefaultValue(false);

@@ -89,4 +89,26 @@ namespace iParking.Domain.Enums
         Failed = 3,       // Cobro fallido
         Deferred = 4      // Diferido a facturación posterior
     }
+
+    /// <summary>
+    /// Estado de una tarjeta de pago asociada a un usuario.
+    /// </summary>
+    public enum EstadoTarjeta
+    {
+        Inactiva = 0,
+        Activa = 1,
+        Bloqueada = 2,
+        Expirada = 3
+    }
+
+    /// <summary>
+    /// Estado de cuenta de usuario en el sistema.
+    /// </summary>
+    public enum EstadoUsuario
+    {
+        Inactivo = 0,
+        Activo = 1,
+        Suspendido = 2,
+        PendienteActivacion = 3
+    }
 }

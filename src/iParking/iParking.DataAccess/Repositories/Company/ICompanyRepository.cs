@@ -2,7 +2,7 @@ using System.Data;
 using iParking.Domain.Entities.MultiTenant;
 using iParking.Domain.Shared;
 
-namespace iParking.DataAccess.Repositories.Company
+namespace iParking.DataAccess.Repositories.Companies
 {
     /// <summary>
     /// Interfaz para el repositorio de empresas.

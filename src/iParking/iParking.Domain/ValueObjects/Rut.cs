@@ -126,6 +126,51 @@ namespace iParking.Domain.ValueObjects
             return new Rut(numero, dv);
         }
 
+        /// <summary>
+        /// Intenta parsear un número y dígito verificador a un Value Object Rut válido.
+        /// </summary>
+        public static bool TryParse(string? numero, string? dv, out Rut? result)
+        {
+            result = null;
+            if (string.IsNullOrWhiteSpace(numero) || string.IsNullOrWhiteSpace(dv))
+                return false;
+
+            try
+            {
+                if (IsValid(numero, dv))
+                {
+                    result = new Rut(numero, dv);
+                    return true;
+                }
+            }
+            catch
+            {
+                // Ignorar excepción y retornar false
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Intenta parsear una cadena completa de RUT a un Value Object Rut válido.
+        /// </summary>
+        public static bool TryParse(string? rutCompleto, out Rut? result)
+        {
+            result = null;
+            if (string.IsNullOrWhiteSpace(rutCompleto))
+                return false;
+
+            try
+            {
+                result = Parse(rutCompleto);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public override string ToString() => Formatted;
         public override bool Equals(object? obj) => Equals(obj as Rut);
         public bool Equals(Rut? other) => other is not null && Numero == other.Numero && DigitoVerificador == other.DigitoVerificador;

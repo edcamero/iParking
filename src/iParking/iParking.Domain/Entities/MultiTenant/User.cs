@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using iParking.Domain.Entities.Parking;
+using iParking.Domain.Entities.Subscription;
 using Microsoft.AspNetCore.Identity;
 
 namespace iParking.Domain.Entities.MultiTenant
@@ -25,6 +28,15 @@ namespace iParking.Domain.Entities.MultiTenant
         [StringLength(20)]
         public string? Telefono { get; set; }
 
+        /// <summary>
+        /// Alias de compatibilidad para Email.
+        /// </summary>
+        public string? Mail
+        {
+            get => Email;
+            set => Email = value;
+        }
+
         // Campos adicionales para el modelo SaaS
         public int? CompanyId { get; set; }
         public string? ImeiCelular { get; set; }
@@ -35,7 +47,7 @@ namespace iParking.Domain.Entities.MultiTenant
 
         // Navegación
         public virtual Company? Company { get; set; }
-        public virtual ICollection<Parking.ParkingSession> OperatedSessions { get; set; } = new List<Parking.ParkingSession>();
-        public virtual ICollection<Subscription.Subscription> Subscriptions { get; set; } = new List<Subscription.Subscription>();
+        public virtual ICollection<ParkingSession> OperatedSessions { get; set; } = new List<ParkingSession>();
+        public virtual ICollection<Domain.Entities.Subscription.Subscription> Subscriptions { get; set; } = new List<Domain.Entities.Subscription.Subscription>();
     }
 }

@@ -5,7 +5,7 @@ using iParking.Domain.Shared;
 using iParking.DataAccess.Repositories.Base;
 using CompanyEntity = iParking.Domain.Entities.MultiTenant.Company;
 
-namespace iParking.DataAccess.Repositories.Company
+namespace iParking.DataAccess.Repositories.Companies
 {
     /// <summary>
     /// Implementación del repositorio de empresas usando Dapper.
@@ -25,11 +25,11 @@ namespace iParking.DataAccess.Repositories.Company
                 var company = await ExecuteQueryFirstOrDefaultAsync<Company>(sql, new { Id = id });
                 return company != null 
                     ? Result<Company>.Success(company) 
-                    : Result<Company>.Error("Empresa no encontrada");
+                    : Result<Company>.Failure("Empresa no encontrada");
             }
             catch (Exception ex)
             {
-                return Result<Company>.Error($"Error al obtener empresa: {ex.Message}");
+                return Result<Company>.Failure($"Error al obtener empresa: {ex.Message}");
             }
         }
 
@@ -46,7 +46,7 @@ namespace iParking.DataAccess.Repositories.Company
             }
             catch (Exception ex)
             {
-                return Result<IEnumerable<Company>>.Error($"Error al listar empresas: {ex.Message}");
+                return Result<IEnumerable<Company>>.Failure($"Error al listar empresas: {ex.Message}");
             }
         }
 
@@ -67,7 +67,7 @@ namespace iParking.DataAccess.Repositories.Company
             }
             catch (Exception ex)
             {
-                return Result<Company>.Error($"Error al crear empresa: {ex.Message}");
+                return Result<Company>.Failure($"Error al crear empresa: {ex.Message}");
             }
         }
 
@@ -94,7 +94,7 @@ namespace iParking.DataAccess.Repositories.Company
             }
             catch (Exception ex)
             {
-                return Result<bool>.Error($"Error al actualizar empresa: {ex.Message}");
+                return Result<bool>.Failure($"Error al actualizar empresa: {ex.Message}");
             }
         }
 
@@ -109,7 +109,7 @@ namespace iParking.DataAccess.Repositories.Company
             }
             catch (Exception ex)
             {
-                return Result<bool>.Error($"Error al eliminar empresa: {ex.Message}");
+                return Result<bool>.Failure($"Error al eliminar empresa: {ex.Message}");
             }
         }
 
@@ -122,11 +122,11 @@ namespace iParking.DataAccess.Repositories.Company
                 var company = await ExecuteQueryFirstOrDefaultAsync<Company>(sql, new { TaxId = taxId });
                 return company != null 
                     ? Result<Company>.Success(company) 
-                    : Result<Company>.Error("Empresa no encontrada con ese NIT/RUT");
+                    : Result<Company>.Failure("Empresa no encontrada con ese NIT/RUT");
             }
             catch (Exception ex)
             {
-                return Result<Company>.Error($"Error al buscar empresa por NIT/RUT: {ex.Message}");
+                return Result<Company>.Failure($"Error al buscar empresa por NIT/RUT: {ex.Message}");
             }
         }
 
@@ -141,7 +141,7 @@ namespace iParking.DataAccess.Repositories.Company
             }
             catch (Exception ex)
             {
-                return Result<int>.Error($"Error al contar empresas: {ex.Message}");
+                return Result<int>.Failure($"Error al contar empresas: {ex.Message}");
             }
         }
     }

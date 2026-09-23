@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Net;
 
-namespace iParking.Domain.Entities
+namespace iParking.Domain.ExternalServices.Klap
 {
     public  class ResponsePayKlap
     {
