@@ -1,27 +1,22 @@
 ```
-# Build results
-**/bin/
-**/obj/
-**/out/
+# Dependencies
+bin/
+obj/
 
-# User-specific files
-.vs/
-.vscode/
-*.userprefs
+# Logs and temp files
+*.log
+*.tmp
 
-# Environment specific settings
+# Environment
 .env
 .env.local
 *.env.*
 
+# Editors
+.vscode/
+.idea/
+
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*~
 ```
