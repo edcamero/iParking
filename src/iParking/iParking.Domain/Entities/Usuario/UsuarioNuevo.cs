@@ -5,6 +5,7 @@ namespace iParking.Domain.Entities.Usuario
     /// <summary>
     /// DTO para creación de nuevos usuarios con validaciones.
     /// Aplica principios de Clean Code con validaciones declarativas.
+    /// Nota: El Estado NO es ingresado por el usuario, se asigna por defecto en el servicio.
     /// </summary>
     public class UsuarioNuevo
     {
@@ -14,7 +15,7 @@ namespace iParking.Domain.Entities.Usuario
 
         [Required(ErrorMessage = "El dígito verificador es obligatorio")]
         [StringLength(1, MinimumLength = 1, ErrorMessage = "El dígito verificador debe ser un carácter")]
-        public string DigVer { get; set; } = string.Empty;
+        public string Dv { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El email es obligatorio")]
         [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
@@ -50,6 +51,6 @@ namespace iParking.Domain.Entities.Usuario
         [StringLength(50, ErrorMessage = "La ciudad no puede exceder los 50 caracteres")]
         public string? Ciudad { get; set; }
 
-        public int Estado { get; set; } = 1;
+        // NOTA: Estado eliminado - es un campo interno del sistema, no lo define el usuario al crear la cuenta
     }
 }

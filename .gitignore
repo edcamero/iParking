@@ -1,1 +1,22 @@
-Nothing needs to be added to .gitignore since the changes only include source code files (.cs files) which should not be ignored.
+
+# Dependencies
+bin/
+obj/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
