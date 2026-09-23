@@ -1,5 +1,6 @@
 using System;
 using iParking.Domain.Common;
+using iParking.Domain.Entities.Parking;
 
 namespace iParking.Domain.Entities.MultiTenant
 {
