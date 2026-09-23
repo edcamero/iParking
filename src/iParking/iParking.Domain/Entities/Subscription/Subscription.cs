@@ -1,5 +1,8 @@
 using System;
+using iParking.Domain.Common;
 using iParking.Domain.Enums;
+using iParking.Domain.Entities.MultiTenant;
+using iParking.Domain.Entities.Parking;
 
 namespace iParking.Domain.Entities.Subscription
 {
@@ -17,7 +20,7 @@ namespace iParking.Domain.Entities.Subscription
         public decimal Amount { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public bool IsActive { get; set; } = true;
+        public new bool IsActive { get; set; } = true;
         public bool AutoRenew { get; set; }
         public DateTime? LastPaymentDate { get; set; }
         public DateTime? NextPaymentDate { get; set; }
