@@ -1,34 +1,32 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using iParking.Domain.Enums;
-using Microsoft.AspNetCore.Identity;
 
 namespace iParking.Domain.Entities.Usuario
 {
     /// <summary>
-    /// Entidad principal de usuario que soporta el modelo multi-empresa y roles.
-    /// Hereda de IdentityUser<int> para integrar con ASP.NET Core Identity.
+    /// Entidad de usuario legacy compatible con la base de datos existente TBL_USUARIOS.
     /// </summary>
-    public class User : IdentityUser<int>
+    public class Usuario
     {
+        [Key]
+        public int IdUsuario { get; set; }
         public string Rut { get; set; } = string.Empty;
         public string Dv { get; set; } = string.Empty;
         public string Nombres { get; set; } = string.Empty;
         public string Apellidos { get; set; } = string.Empty;
+        public string Mail { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
         public int Estado { get; set; } = 1;
+        public string ClaveAcceso { get; set; } = string.Empty;
         
-        // Nuevos campos para modelo SaaS
-        public int? CompanyId { get; set; } // null para SuperAdmin
+        // Campos adicionales para el modelo SaaS
+        public int? CompanyId { get; set; }
         public UserRole Role { get; set; } = UserRole.Operator;
         public string? ImeiCelular { get; set; }
         public string? SerieCelular { get; set; }
         public string? VersionApp { get; set; }
         public string? Ciudad { get; set; }
         public DateTime? LastLoginDate { get; set; }
-
-        // Navegación
-        public virtual Company? Company { get; set; }
-        public virtual ICollection<ParkingSession> OperatedSessions { get; set; } = new List<ParkingSession>();
-        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }

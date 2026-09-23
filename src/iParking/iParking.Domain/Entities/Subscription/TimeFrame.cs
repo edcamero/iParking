@@ -1,4 +1,5 @@
 using System;
+using iParking.Domain.Common;
 using iParking.Domain.Enums;
 
 namespace iParking.Domain.Entities.Subscription
