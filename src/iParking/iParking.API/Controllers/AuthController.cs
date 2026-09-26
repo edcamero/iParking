@@ -27,46 +27,28 @@ namespace iParking.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromForm] LoginInput login)
         {
-            var isAuth = await _authServices.Login(login);
+            var authResult = await _authServices.LoginAsync(login);
 
-            if (isAuth)
+            if (authResult.IsSuccess)
             {
                 var user = await _userServices.GetUser(login.Mail);
 
-                if (user is null) {
-                    throw new Exception("no existe");
+                if (user is null)
+                {
+                    return NotFound(ApiResponse<AuthResponse>.Failure("Usuario no encontrado"));
                 }
 
-                var response = new
+                var response = new AuthResponse
                 {
-                    status = true,
-                    data = new
-                    {
-                        keySession = _tokenService.GenerateToken(user.IdUsuario.ToString()),
-                        rut = user.Rut,
-                        digVer = user.Dv,
-                        mail = user.Mail,
-                        nombres = user.Nombres,
-                        apellidos = user.Apellidos,
-                        telefono = user.Telefono,
-                    }
+                    KeySession = _tokenService.GenerateToken(user.IdUsuario.ToString()),
+                    FullName = $"{user.FirstName} {user.LastName}",
+                    Mail = user.Email,
                 };
 
-                return Ok(response);
+                return Ok(ApiResponse<AuthResponse>.Success(response));
             }
-            else
-            {
-                var response = new
-                {
-                    status = false,
-                    data = new
-                    {
-                        keySession = "0",
-                        errorMessage = "Usuario o clave Invalida!"
-                    }
-                };
-                return BadRequest(response);
-            }
+
+            return BadRequest(ApiResponse<AuthResponse>.Failure(authResult.Error ?? "Usuario o clave Invalida!"));
         }
 
         [Route("api/v1/auth/logout")]
@@ -77,20 +59,10 @@ namespace iParking.API.Controllers
 
             if (claimsPrincipal != null)
             {
-                return Ok(new { estatus = true });
+                return Ok(ApiResponse<string>.Success("Sesión cerrada exitosamente"));
             }
-            else
-            {
-                return BadRequest(new
-                {
-                    status = false,
-                    data = new
-                    {
-                        keySession = "0",
-                        errorMessage = "Usuario o clave Invalida!"
-                    }
-                });
-            }
+
+            return BadRequest(ApiResponse<string>.Failure("Sesión inválida"));
         }
     }
 }

@@ -66,5 +66,20 @@ namespace iParking.Infrastructure.Services
 
             return await httpClient.SendAsync(request);
         }
+
+        Task<HttpResponseMessage> IIntegrationServiceClient.SendRequestAsync(string requestUrl, HttpMethod httpMethod, object requestData)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<HttpResponseMessage> IIntegrationServiceClient.SendRequestAsync(string requestUrl, HttpMethod httpMethod, object requestData, Dictionary<string, string> headers)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<HttpResponseMessage> IIntegrationServiceClient.SendRequestAsync(string requestUrl, HttpMethod httpMethod, Dictionary<string, string> headers)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

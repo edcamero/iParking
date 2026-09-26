@@ -2,7 +2,6 @@ using iParking.Domain.Common;
 using iParking.Domain.Entities.MultiTenant;
 using iParking.Domain.Entities.Parking;
 using iParking.Domain.Entities.Subscription;
-using iParking.Domain.Entities.Usuario;
 using iParking.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iParking.DataAccess.DbContexts;
 
-public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>, int>
+public partial class ParkingContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
 {
     public ParkingContext()
     {
@@ -38,21 +37,20 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configurar User (IdentityUser)
-        modelBuilder.Entity<User>(entity =>
+        // Configure ApplicationUser (IdentityUser)
+        modelBuilder.Entity<ApplicationUser>(entity =>
         {
             entity.ToTable("Users");
             entity.Property(e => e.Rut).HasMaxLength(20).IsUnicode(false);
             entity.Property(e => e.Dv).HasMaxLength(1).IsUnicode(false);
-            entity.Property(e => e.Nombres).HasMaxLength(100).IsUnicode(false);
-            entity.Property(e => e.Apellidos).HasMaxLength(100).IsUnicode(false);
-            entity.Property(e => e.Telefono).HasMaxLength(20).IsUnicode(false);
-            entity.Property(e => e.Mail).HasMaxLength(256);
-            entity.Property(e => e.ImeiCelular).HasMaxLength(50).IsUnicode(false);
-            entity.Property(e => e.SerieCelular).HasMaxLength(50).IsUnicode(false);
-            entity.Property(e => e.VersionApp).HasMaxLength(20).IsUnicode(false);
-            entity.Property(e => e.Ciudad).HasMaxLength(100).IsUnicode(false);
-
+            entity.Property(e => e.FirstName).HasMaxLength(100).IsUnicode(false);
+            entity.Property(e => e.LastName).HasMaxLength(100).IsUnicode(false);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.DeviceImei).HasMaxLength(50).IsUnicode(false);
+            entity.Property(e => e.DeviceSerial).HasMaxLength(50).IsUnicode(false);
+            entity.Property(e => e.AppVersion).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.City).HasMaxLength(100).IsUnicode(false);
             entity.HasOne(d => d.Company)
                 .WithMany(p => p.Users)
                 .HasForeignKey(d => d.CompanyId)
@@ -102,12 +100,12 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
             entity.ToTable("ParkingSpots");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Identifier).HasMaxLength(20).IsUnicode(false).IsRequired();
-            entity.Property(e => e.Sector).HasMaxLength(50).IsUnicode(false).IsRequired();
+            entity.Property(e => e.Sector).HasMaxLength(50).IsUnicode(false);
             entity.Property(e => e.Status).HasDefaultValue(ParkingSpotStatus.Available);
             entity.Property(e => e.IsDisabled).HasDefaultValue(false);
 
             entity.HasOne(d => d.ParkingLot)
-                .WithMany(p => p.ParkingSpots)
+                .WithMany()
                 .HasForeignKey(d => d.ParkingLotId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
@@ -122,9 +120,9 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.FreeMinutes).HasDefaultValue(0);
 
-            entity.HasOne(d => d.ParkingLot)
-                .WithMany(p => p.Rates)
-                .HasForeignKey(d => d.ParkingLotId)
+            entity.HasOne(d => d.Company)
+                .WithMany()
+                .HasForeignKey(d => d.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -140,7 +138,7 @@ public partial class ParkingContext : IdentityDbContext<User, IdentityRole<int>,
             entity.Property(e => e.IsPaid).HasDefaultValue(false);
 
             entity.HasOne(d => d.ParkingLot)
-                .WithMany(p => p.Sessions)
+                .WithMany()
                 .HasForeignKey(d => d.ParkingLotId)
                 .OnDelete(DeleteBehavior.Restrict);
 

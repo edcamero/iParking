@@ -54,6 +54,7 @@ namespace iParking.API.Middleware
                     {
                         status = false,
                         message = argEx.Message,
+                        error = GetErrorMessage(exception),
                         code = 400
                     };
                     break;
@@ -62,8 +63,9 @@ namespace iParking.API.Middleware
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     errorResponse = new
                     {
-                        status = false,
+                        status = false,                     
                         message = "No autorizado",
+                        error = GetErrorMessage(exception),
                         code = 401
                     };
                     break;
@@ -74,6 +76,7 @@ namespace iParking.API.Middleware
                     {
                         status = false,
                         message = "Recurso no encontrado",
+                        error = GetErrorMessage(exception),
                         code = 404
                     };
                     break;

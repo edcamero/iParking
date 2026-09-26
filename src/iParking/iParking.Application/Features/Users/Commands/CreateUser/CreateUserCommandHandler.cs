@@ -1,8 +1,9 @@
 using MediatR;
 using iParking.DataAccess.DataServices;
 using iParking.Domain.Entities;
-using iParking.Domain.Entities.Usuario;
+using iParking.Domain.Entities.MultiTenant;
 using iParking.Infrastructure.Security;
+using iParking.Application.DTOs.User;
 
 namespace iParking.Application.Features.Users.Commands.CreateUser
 {
@@ -43,19 +44,19 @@ namespace iParking.Application.Features.Users.Commands.CreateUser
                 return response;
             }
 
-            var nuevoUsuario = new UsuarioNuevo
+            // Use the DTO logic to prepare the entity
+            var newUserDto = new CreateUserDto
             {
                 Rut = request.Rut,
-                DigVer = request.Dv,
-                Mail = request.Mail,
+                Dv = request.Dv,
+                Email = request.Mail,
                 Password = request.Password,
-                ClaveAcceso = _securityHash.GenerateHash(request.Password),
-                Nombres = request.Nombres,
-                Apellidos = request.Apellidos,
+                FirstName = request.Nombres,
+                LastName = request.Apellidos,
                 Telefono = request.Telefono
             };
 
-            var userId = await _userDataServices.CreatedUser(nuevoUsuario);
+            var userId = await _userDataServices.CreatedUser(newUserDto);
 
             if (userId > 0)
             {

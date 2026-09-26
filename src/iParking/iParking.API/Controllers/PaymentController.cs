@@ -1,4 +1,5 @@
 ﻿using iParking.Application.ServicesExternal;
+using iParking.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,7 +52,7 @@ namespace iParking.API.Controllers
                     return Ok(responsePay);
                 }
 
-                _logger.LogWarning("Error al iniciar pago: {Message}", responsePay.Message);
+                _logger.LogWarning("Error al iniciar pago: {Message}", responsePay.Data.ErrorMessage);
                 return BadRequest(responsePay);
             }
             catch (Exception ex)

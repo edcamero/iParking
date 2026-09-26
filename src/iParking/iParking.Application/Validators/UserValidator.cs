@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using iParking.Domain.Entities.Usuario;
+using iParking.Application.DTOs.User;
 
 namespace iParking.Application.Validators
 {
@@ -9,24 +9,24 @@ namespace iParking.Application.Validators
     /// </summary>
     public class UserValidator
     {
-        public ValidationResult Validate(UsuarioNuevo usuario)
+        public ValidationResult Validate(CreateUserDto user)
         {
-            if (string.IsNullOrWhiteSpace(usuario.Rut))
+            if (string.IsNullOrWhiteSpace(user.Rut))
                 return ValidationResult.Failure("El RUT es obligatorio", 400);
 
-            if (string.IsNullOrWhiteSpace(usuario.DigVer))
+            if (string.IsNullOrWhiteSpace(user.Dv))
                 return ValidationResult.Failure("El dígito verificador es obligatorio", 400);
 
-            if (string.IsNullOrWhiteSpace(usuario.Mail))
+            if (string.IsNullOrWhiteSpace(user.Email))
                 return ValidationResult.Failure("El email es obligatorio", 400);
 
-            if (!IsValidEmail(usuario.Mail))
+            if (!IsValidEmail(user.Email))
                 return ValidationResult.Failure("El email no tiene un formato válido", 400);
 
-            if (string.IsNullOrWhiteSpace(usuario.ClaveAcceso))
+            if (string.IsNullOrWhiteSpace(user.Password))
                 return ValidationResult.Failure("La contraseña es obligatoria", 400);
 
-            if (usuario.ClaveAcceso.Length < 8)
+            if (user.Password.Length < 8)
                 return ValidationResult.Failure("La contraseña debe tener al menos 8 caracteres", 400);
 
             return ValidationResult.Success();

@@ -1,6 +1,7 @@
-﻿using iParking.Application.Services.User;
-using iParking.Domain.Entities.Usuario;
+using iParking.Application.Services.User;
+using iParking.Application.DTOs.User;
 using Microsoft.AspNetCore.Mvc;
+using iParking.Domain.Shared;
 
 namespace iParking.API.Controllers
 {
@@ -18,52 +19,41 @@ namespace iParking.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromForm] UsuarioNuevo newuser)
+        public async Task<IActionResult> CreateUser([FromForm] CreateUserDto newUser)
         {
             try
             {
-                var responseUser = await _userServices.CreatedUser(newuser);
+                var responseUser = await _userServices.CreatedUser(newUser);
 
                 if (responseUser.Status)
                 {
-                    var response = new
+                    var user = await _userServices.GetUser(newUser.Email);
+
+                    var response = new ApiResponse<object>
                     {
-                        status = true,
-                        data = new
+                        Status = true,
+                        Data = new
                         {
                             keySession = responseUser.KeySession,
                             id = responseUser.Id,
-                            rut = newuser.Rut,
-                            digVer = newuser.DigVer,
-                            mail = newuser.Mail,
-                            nombres = newuser.Nombres,
-                            apellidos = newuser.Apellidos,
-                            telefono = newuser.Telefono
+                            rut = newUser.Rut,
+                            dv = newUser.Dv,
+                            email = newUser.Email,
+                            fullName = $"{newUser.FirstName} {newUser.LastName}",
+                            phone = newUser.PhoneNumber
                         }
                     };
 
                     return Ok(response);
                 }
 
-                var responseHttp = new
-                {
-                    status = false,
-                    data = new
-                    {
-                        keySession = "0",
-                        message = responseUser.Message
-                    }
-                };
-
-                return BadRequest(responseHttp);
+                return BadRequest(ApiResponse<object>.Failure(responseUser.Message));
             }
             catch(Exception ex)
             {
                 _logger.LogError(ex,"error al crear usuario");
-
-                return StatusCode(500, "Error de servidor");
+                return StatusCode(500, ApiResponse<object>.Failure("Error de servidor"));
             }
-
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using iParking.Domain.Entities.Usuario;
+﻿using iParking.Domain.Entities.MultiTenant;
 using iParking.Domain.Entities;
 
 namespace iParking.Application.Services.User
 {
     public interface IUserServices
     {
-        Task<ActionResponseSession> CreatedUser(UsuarioNuevo nuevoUsuario);
-        Task<Usuario?> GetUser(string mail);
+        Task<ActionResponseSession> CreatedUser(CreateUserDto newUser);
+        Task<ApplicationUser?> GetUser(string email);
     }
 }

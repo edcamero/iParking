@@ -1,7 +1,8 @@
-﻿using iParking.DataAccess.DataServices;
+using iParking.DataAccess.DataServices;
 using iParking.Domain.Entities;
-using iParking.Domain.Entities.Usuario;
+using iParking.Domain.Entities.MultiTenant;
 using iParking.Infrastructure.Security;
+using iParking.Application.DTOs.User;
 
 namespace iParking.Application.Services.User
 {
@@ -18,9 +19,9 @@ namespace iParking.Application.Services.User
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
-        public async Task<ActionResponseSession> CreatedUser(UsuarioNuevo nuevoUsuario)
+        public async Task<ActionResponseSession> CreatedUser(CreateUserDto newUser)
         {
-            var user = await _userDataServices.GetUserAsync(nuevoUsuario.Rut, nuevoUsuario.DigVer);
+            var user = await _userDataServices.GetUserAsync(newUser.Rut, newUser.Dv);
 
             var response = new ActionResponseSession();
 
@@ -32,23 +33,33 @@ namespace iParking.Application.Services.User
                 return response;
             }
 
-            if (user != null && user.Dv.Equals(nuevoUsuario.DigVer) && user!.Rut.Equals(nuevoUsuario.Rut) && user.ClaveAcceso.Equals(nuevoUsuario.ClaveAcceso))
+            if (user != null && user.Dv.Equals(newUser.Dv) && user!.Rut.Equals(newUser.Rut) && user.ClaveAcceso.Equals(newUser.Password))
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = _tokenService.GenerateToken(user.IdUsuario.ToString());
                 response.Id = user.IdUsuario;
 
                 return response;
             }
-            nuevoUsuario.ClaveAcceso = _securityHash.GenerateHash(nuevoUsuario.ClaveAcceso);
-            var userId = await _userDataServices.CreatedUser(nuevoUsuario);
+
+            // Note: This logic will be replaced by UserManager in the next phase
+            var newUserEntity = new ApplicationUser
+            {
+                Rut = newUser.Rut,
+                Dv = newUser.Dv,
+                Email = newUser.Email,
+                FirstName = newUser.FirstName,
+                LastName = newUser.LastName,
+                PhoneNumber = newUser.PhoneNumber,
+                ClaveAcceso = _securityHash.GenerateHash(newUser.Password) // Temporary compatibility
+            };
+
+            var userId = await _userDataServices.CreatedUser(newUser);
 
             if (userId > 0)
             {
                 response.Status = true;
                 response.Code = 201;
-                response.KeySession = _tokenService.GenerateToken(userId.ToString()); ;
                 response.Id = userId;
 
             }
@@ -60,11 +71,9 @@ namespace iParking.Application.Services.User
             return response;
         }
 
-
-        public async Task<Usuario?> GetUser(string mail)
+        public async Task<ApplicationUser?> GetUser(string email)
         {
-            return await _userDataServices.GetUserAsync(mail);
-
+            return await _userDataServices.GetUserAsync(email);
         }
     }
 }

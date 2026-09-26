@@ -35,7 +35,7 @@ namespace iParking.Domain.Entities.Subscription
         // Navegación
         public virtual Company Company { get; set; } = null!;
         public virtual ParkingLot? ParkingLot { get; set; }
-        public virtual MultiTenant.User User { get; set; } = null!;
+        public virtual MultiTenant.ApplicationUser User { get; set; } = null!;
         public virtual ICollection<TimeFrame> TimeFrames { get; set; } = new List<TimeFrame>();
         public virtual ICollection<ParkingSessionExcess> ExcessRecords { get; set; } = new List<ParkingSessionExcess>();
     }
